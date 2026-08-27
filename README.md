@@ -3,7 +3,7 @@
 แดชบอร์ดคลังหนังสือสไตล์ **KRIDA (Cyber Kinetic)** — แสดงหนังสือที่อ่านจบ / กำลังอ่าน / อยากอ่าน
 พร้อมสถิติการอ่านแบบเรียลไทม์ ค้นหา กรอง จัดเรียง และเพิ่มหนังสือใหม่ได้
 
-**🔗 Live demo:** _(เปิดใช้งาน GitHub Pages แล้วลิงก์จะเป็น)_ `https://<username>.github.io/<repo>/`
+**🔗 Live demo → https://sirpuech.github.io/puech-book-library/**
 
 ![theme](https://img.shields.io/badge/theme-Cyber%20Kinetic-2563EB) ![fonts](https://img.shields.io/badge/font-Prompt-F97316) ![build](https://img.shields.io/badge/deps-none-10b981)
 
