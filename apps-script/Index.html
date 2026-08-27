@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base target="_top">
+<title>PUECH Book Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<?!= include("Stylesheet"); ?>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="brandbar">
+      <div class="brand">
+        <div class="mark">K</div>
+        <div class="who"><b>KRIDA</b><span>Reading Intelligence · แดชบอร์ดคลังหนังสือ</span></div>
+      </div>
+      <div class="tools">
+        <button class="tbtn grad" id="addBtn2" type="button"><span class="plus">+</span> เพิ่มหนังสือ</button>
+        <button class="tbtn" id="themeBtn" aria-label="Toggle theme"><span id="themeIco">◐</span><span id="themeTxt">Theme</span></button>
+      </div>
+    </div>
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow">PUECH · Personal Book Archive</div>
+        <h1>คลังหนังสือ<br><span class="grad-text">ที่ผมได้อ่าน</span></h1>
+        <p class="sub">รวมทุกเล่มที่อ่านจบ กำลังอ่าน และอยากอ่าน พร้อมสถิติการอ่านแบบเรียลไทม์ — จัดหมวดหมู่ ให้คะแนน และติดตามความคืบหน้าได้ในที่เดียว</p>
+        <p class="en">A living archive of everything I've read, am reading, and wish to read — categorised, rated, and tracked.</p>
+      </div>
+
+      <div class="progress-card">
+        <div class="ph"><span class="lab">อ่านจบแล้ว · Finished</span><span class="lab mono" id="pcPct">—</span></div>
+        <div class="big"><span id="pcDoneN">0</span><small id="pcTotal"> / 0 เล่ม</small></div>
+        <div class="bar"><i id="pcBar"></i></div>
+        <div class="foot"><span id="pcFootL">—</span><span id="pcFootR">—</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- KPI STRIP -->
+  <section aria-label="Key stats" style="padding-top:30px">
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section>
+    <div class="sec-head">
+      <div class="t"><h2>ภาพรวมการอ่าน</h2><div class="en">READING ANALYTICS — how the shelf breaks down</div></div>
+    </div>
+    <div class="analytics">
+      <div class="panel">
+        <h3>ความคืบหน้าตามหมวดหมู่ <span class="en">by category</span></h3>
+        <div class="sub-note">สัดส่วนที่อ่านจบเทียบกับจำนวนในลิสต์ · finished vs. in-list</div>
+        <div id="catBars"></div>
+      </div>
+      <div class="stack">
+        <div class="panel">
+          <h3>สถานะหนังสือ <span class="en">status</span></h3>
+          <div class="sub-note" style="margin-bottom:14px">แบ่งตามสถานะการอ่าน</div>
+          <div class="donut-wrap">
+            <div class="donut" id="donut"></div>
+            <div class="legend" id="donutLegend"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>การให้คะแนน <span class="en">ratings</span></h3>
+          <div class="sub-note" style="margin-bottom:14px">เฉพาะเล่มที่ให้คะแนนแล้ว</div>
+          <div id="ratingBars"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analytics" style="margin-top:20px">
+      <div class="panel">
+        <h3>อ่านจบรายปี <span class="en">finished by year</span></h3>
+        <div class="sub-note">นับจากเล่มที่บันทึกวันที่อ่านจบไว้</div>
+        <div class="years" id="years"></div>
+      </div>
+      <div class="panel">
+        <h3>นักเขียนที่อ่านบ่อยที่สุด <span class="en">top authors</span></h3>
+        <div class="sub-note" style="margin-bottom:16px">เรียงตามจำนวนเล่ม</div>
+        <div id="authors"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLORER -->
+  <section id="explorer">
+    <div class="sec-head">
+      <div class="t"><h2>สำรวจหนังสือทั้งหมด</h2><div class="en">EXPLORE THE LIBRARY — search, filter & sort</div></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="row1">
+        <div class="search">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="q" type="search" placeholder="ค้นหาชื่อหนังสือหรือนักเขียน… · search title or author" autocomplete="off">
+        </div>
+        <select class="ctl" id="genreSel" aria-label="Genre"></select>
+        <select class="ctl" id="sortSel" aria-label="Sort">
+          <option value="finished">เรียง: อ่านจบล่าสุด · Recently finished</option>
+          <option value="rating">เรียง: คะแนนสูงสุด · Highest rated</option>
+          <option value="title">เรียง: ชื่อ A–Z · Title</option>
+          <option value="author">เรียง: นักเขียน A–Z · Author</option>
+        </select>
+        <div class="viewtoggle" role="group" aria-label="View">
+          <button id="vGrid" class="active" aria-pressed="true">▦ การ์ด</button>
+          <button id="vTable" aria-pressed="false">▤ ตาราง</button>
+        </div>
+        <button class="addbtn" id="addBtn" type="button"><span class="plus">+</span> เพิ่มหนังสือ</button>
+      </div>
+      <div class="chips" id="statusChips"></div>
+    </div>
+
+    <div class="count" id="count"></div>
+    <div id="results"></div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="l"><div class="mark">K</div><div>สร้างโดย <b style="color:var(--text)">KRIDA</b> · Google Workspace &amp; Full-Stack Solutions</div></div>
+    <div class="r">Cyber Kinetic Theme · Live template</div>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="mh">
+      <div><h3 id="modalTitle">เพิ่มหนังสือใหม่</h3><div class="en">ADD A NEW BOOK</div></div>
+      <button class="x" id="modalClose" type="button" aria-label="ปิด">×</button>
+    </div>
+    <form class="mform" id="addForm" novalidate>
+      <div class="field full" id="f-title">
+        <label>ชื่อหนังสือ <span class="en">TITLE *</span></label>
+        <input id="in-title" type="text" placeholder="เช่น Atomic Habits" autocomplete="off">
+        <span class="err">กรุณากรอกชื่อหนังสือ · title is required</span>
+      </div>
+      <div class="field full">
+        <label>นักเขียน <span class="en">AUTHOR</span></label>
+        <input id="in-author" type="text" placeholder="เช่น James Clear" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>หมวดหมู่ <span class="en">GENRE</span></label>
+        <input id="in-genre" list="genreList" placeholder="เลือกหรือพิมพ์ใหม่" autocomplete="off">
+        <datalist id="genreList"></datalist>
+      </div>
+      <div class="field">
+        <label>สถานะ <span class="en">STATUS</span></label>
+        <select id="in-status">
+          <option value="Done">อ่านจบแล้ว · Done</option>
+          <option value="In progress">กำลังอ่าน · In progress</option>
+          <option value="Wished">อยากอ่าน · Wished</option>
+          <option value="Not Start">ยังไม่เริ่ม · Not Start</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>คะแนน <span class="en">RATING</span></label>
+        <div class="starpick" id="starPick" aria-label="ให้คะแนน">
+          <button type="button" class="s" data-v="1" aria-label="1 ดาว">★</button>
+          <button type="button" class="s" data-v="2" aria-label="2 ดาว">★</button>
+          <button type="button" class="s" data-v="3" aria-label="3 ดาว">★</button>
+          <button type="button" class="s" data-v="4" aria-label="4 ดาว">★</button>
+          <button type="button" class="s" data-v="5" aria-label="5 ดาว">★</button>
+          <button type="button" class="clr" id="starClr">ล้าง</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>วันที่อ่านจบ <span class="en">FINISHED</span></label>
+        <input id="in-date" type="date">
+      </div>
+    </form>
+    <div class="mfoot">
+      <button class="btn-ghost" id="cancelBtn" type="button">ยกเลิก</button>
+      <button class="btn-primary" id="saveBtn" type="button">บันทึกหนังสือ</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>window.__BOOKS__ = <?!= booksJson ?>;</script>
+<?!= include("JavaScript"); ?>
+</body>
+</html>

@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="PUECH Book Library — a KRIDA-style reading dashboard: 195 books with categories, ratings, status and live statistics.">
+<title>PUECH Book Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* ============ KRIDA · Cyber Kinetic — Book Library ============ */
+:root{
+  /* dark is the committed default look */
+  --bg:#0B1120; --bg-2:#0E1626; --bg-soft:#0f1a2e;
+  --surface:rgba(21,31,49,.72); --surface-solid:#131d31;
+  --card:rgba(20,30,50,.66); --card-hover:rgba(28,41,66,.85);
+  --border:rgba(148,171,209,.14); --border-strong:rgba(148,171,209,.26);
+  --text:#e9eef8; --muted:#9fb0cc; --dim:#6a7c99;
+  --blue:#2563EB; --blue-lite:#5b8bff; --blue-glow:rgba(37,99,235,.45);
+  --orange:#F97316; --orange-lite:#fb9a4b; --orange-glow:rgba(249,115,22,.4);
+  --grad:linear-gradient(120deg,#2563EB 0%,#4f6ff0 45%,#F97316 100%);
+  --grad-soft:linear-gradient(120deg,rgba(37,99,235,.16),rgba(249,115,22,.14));
+  --done:#10b981; --progress:#38bdf8; --wished:#a855f7; --notstart:#7c8aa3; --star:#fbbf24;
+  --done-bg:rgba(16,185,129,.14); --progress-bg:rgba(56,189,248,.14);
+  --wished-bg:rgba(168,85,247,.15); --notstart-bg:rgba(124,138,163,.16);
+  --shadow:0 18px 50px -22px rgba(0,0,0,.75);
+  --ring:rgba(91,139,255,.6);
+  --r:16px; --r-sm:10px; --maxw:1200px;
+  color-scheme:dark;
+}
+:root[data-theme="dark"]{
+  --bg:#0B1120; --bg-2:#0E1626; --bg-soft:#0f1a2e;
+  --surface:rgba(21,31,49,.72); --surface-solid:#131d31;
+  --card:rgba(20,30,50,.66); --card-hover:rgba(28,41,66,.85);
+  --border:rgba(148,171,209,.14); --border-strong:rgba(148,171,209,.26);
+  --text:#e9eef8; --muted:#9fb0cc; --dim:#6a7c99;
+  --done:#10b981; --progress:#38bdf8; --wished:#a855f7; --notstart:#7c8aa3; --star:#fbbf24;
+  --done-bg:rgba(16,185,129,.14); --progress-bg:rgba(56,189,248,.14);
+  --wished-bg:rgba(168,85,247,.15); --notstart-bg:rgba(124,138,163,.16);
+  color-scheme:dark;
+}
+/* light palette */
+:root:not([data-theme="dark"]){ }
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    --bg:#f4f6fb; --bg-2:#eef2f9; --bg-soft:#e9eef7;
+    --surface:rgba(255,255,255,.86); --surface-solid:#ffffff;
+    --card:rgba(255,255,255,.9); --card-hover:#ffffff;
+    --border:rgba(15,23,42,.10); --border-strong:rgba(15,23,42,.18);
+    --text:#101a2e; --muted:#4a5b76; --dim:#8a99b3;
+    --blue:#2563EB; --blue-lite:#3b6ef0; --blue-glow:rgba(37,99,235,.22);
+    --orange:#ea6a10; --orange-lite:#f4863a; --orange-glow:rgba(234,106,16,.22);
+    --grad:linear-gradient(120deg,#2563EB 0%,#4f6ff0 45%,#ea6a10 100%);
+    --grad-soft:linear-gradient(120deg,rgba(37,99,235,.10),rgba(234,106,16,.08));
+    --done:#059669; --progress:#0284c7; --wished:#9333ea; --notstart:#64748b; --star:#e59409;
+    --done-bg:rgba(5,150,105,.12); --progress-bg:rgba(2,132,199,.12);
+    --wished-bg:rgba(147,51,234,.12); --notstart-bg:rgba(100,116,139,.14);
+    --shadow:0 18px 44px -26px rgba(20,40,80,.35);
+    --ring:rgba(37,99,235,.5);
+    color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f4f6fb; --bg-2:#eef2f9; --bg-soft:#e9eef7;
+  --surface:rgba(255,255,255,.86); --surface-solid:#ffffff;
+  --card:rgba(255,255,255,.9); --card-hover:#ffffff;
+  --border:rgba(15,23,42,.10); --border-strong:rgba(15,23,42,.18);
+  --text:#101a2e; --muted:#4a5b76; --dim:#8a99b3;
+  --blue:#2563EB; --blue-lite:#3b6ef0; --blue-glow:rgba(37,99,235,.22);
+  --orange:#ea6a10; --orange-lite:#f4863a; --orange-glow:rgba(234,106,16,.22);
+  --grad:linear-gradient(120deg,#2563EB 0%,#4f6ff0 45%,#ea6a10 100%);
+  --grad-soft:linear-gradient(120deg,rgba(37,99,235,.10),rgba(234,106,16,.08));
+  --done:#059669; --progress:#0284c7; --wished:#9333ea; --notstart:#64748b; --star:#e59409;
+  --done-bg:rgba(5,150,105,.12); --progress-bg:rgba(2,132,199,.12);
+  --wished-bg:rgba(147,51,234,.12); --notstart-bg:rgba(100,116,139,.14);
+  --shadow:0 18px 44px -26px rgba(20,40,80,.35);
+  --ring:rgba(37,99,235,.5);
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:"Prompt","Segoe UI",system-ui,-apple-system,sans-serif;
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body::before{ /* ambient kinetic glow */
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(680px 420px at 12% -6%, var(--blue-glow), transparent 60%),
+    radial-gradient(620px 460px at 100% 4%, var(--orange-glow), transparent 58%),
+    linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);
+}
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 22px}
+a{color:inherit}
+h1,h2,h3{font-family:"Prompt",sans-serif; margin:0; text-wrap:balance; letter-spacing:-.01em}
+.eyebrow{font-family:"JetBrains Mono",ui-monospace,monospace; font-size:11px; font-weight:500;
+  letter-spacing:.28em; text-transform:uppercase; color:var(--muted)}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+.grad-text{background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent}
+
+/* ---------- HERO ---------- */
+header.hero{position:relative; padding:34px 0 26px; border-bottom:1px solid var(--border)}
+.brandbar{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:30px}
+.brand{display:flex; align-items:center; gap:12px}
+.brand .mark{width:40px;height:40px;border-radius:11px;background:var(--grad);
+  display:grid;place-items:center;font-family:"Prompt";font-weight:700;color:#fff;
+  box-shadow:0 8px 24px -8px var(--blue-glow); font-size:19px}
+.brand .who{line-height:1.15}
+.brand .who b{font-family:"Prompt";font-weight:700;letter-spacing:.02em;font-size:15px}
+.brand .who span{display:block;font-size:11px;color:var(--dim);letter-spacing:.05em}
+.tools{display:flex;align-items:center;gap:10px}
+.tbtn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:10px;
+  border:1px solid var(--border-strong); background:var(--surface); color:var(--text);
+  font-family:"JetBrains Mono",monospace;font-size:12px;cursor:pointer;
+  backdrop-filter:blur(8px); transition:border-color .2s, transform .1s}
+.tbtn:hover{border-color:var(--blue-lite)}
+.tbtn:active{transform:translateY(1px)}
+.hero-grid{display:grid;grid-template-columns:1.35fr .95fr;gap:30px;align-items:end}
+.hero-copy .eyebrow{margin-bottom:14px}
+.hero-copy h1{font-size:clamp(30px,5vw,52px);font-weight:700;line-height:1.02}
+.hero-copy .sub{margin-top:14px;color:var(--muted);max-width:52ch;font-size:15.5px}
+.hero-copy .en{color:var(--dim);font-size:13px;margin-top:2px}
+
+/* progress panel */
+.progress-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:22px;backdrop-filter:blur(10px);box-shadow:var(--shadow)}
+.progress-card .ph{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.progress-card .ph .lab{font-size:12.5px;color:var(--muted)}
+.progress-card .big{font-family:"Prompt";font-weight:700;font-size:44px;line-height:1;
+  font-variant-numeric:tabular-nums}
+.progress-card .big small{font-size:17px;color:var(--dim);font-weight:500}
+.bar{height:12px;border-radius:99px;background:var(--bg-soft);overflow:hidden;margin:16px 0 10px;
+  border:1px solid var(--border)}
+.bar > i{display:block;height:100%;width:0;background:var(--grad);border-radius:99px;
+  transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+.progress-card .foot{display:flex;justify-content:space-between;font-size:12px;color:var(--dim)}
+
+/* ---------- KPI STRIP ---------- */
+section{padding:38px 0}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.sec-head .t h2{font-size:clamp(20px,2.6vw,27px);font-weight:600}
+.sec-head .t .en{color:var(--dim);font-size:12.5px;margin-top:3px}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:16px 16px 14px;
+  position:relative;overflow:hidden;backdrop-filter:blur(6px)}
+.kpi::after{content:"";position:absolute;left:0;top:0;height:3px;width:100%;background:var(--grad);opacity:.9}
+.kpi .n{font-family:"Prompt";font-weight:700;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .n .u{font-size:14px;color:var(--dim);font-weight:500;margin-left:2px}
+.kpi .l{margin-top:8px;font-size:13px;font-weight:500}
+.kpi .l .en{display:block;color:var(--dim);font-size:11px;font-family:"JetBrains Mono",monospace;letter-spacing:.04em}
+.kpi.star .n{color:var(--star)}
+
+/* ---------- ANALYTICS ---------- */
+.analytics{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;
+  backdrop-filter:blur(6px)}
+.panel h3{font-size:16px;font-weight:600;display:flex;align-items:center;gap:9px}
+.panel h3 .en{font-family:"JetBrains Mono",monospace;font-size:10.5px;font-weight:400;color:var(--dim);
+  letter-spacing:.12em;text-transform:uppercase}
+.panel .sub-note{font-size:12px;color:var(--dim);margin:2px 0 18px}
+.stack{display:flex;flex-direction:column;gap:20px}
+
+/* category bars */
+.catrow{margin-bottom:14px}
+.catrow:last-child{margin-bottom:0}
+.catrow .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;font-size:13px}
+.catrow .top .name{font-weight:500}
+.catrow .top .val{color:var(--muted);font-size:12px}
+.catrow .top .val b{color:var(--text);font-weight:600}
+.ctrack{height:9px;border-radius:99px;background:var(--bg-soft);overflow:hidden;border:1px solid var(--border)}
+.ctrack > i{display:block;height:100%;width:0;background:var(--grad);border-radius:99px;
+  transition:width 1s cubic-bezier(.22,1,.36,1)}
+
+/* donut */
+.donut-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.donut{position:relative;width:168px;height:168px;flex:0 0 auto}
+.donut svg{transform:rotate(-90deg);display:block}
+.donut .center{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.donut .center b{font-family:"Prompt";font-weight:700;font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.donut .center span{font-size:11px;color:var(--dim);font-family:"JetBrains Mono",monospace}
+.legend{display:flex;flex-direction:column;gap:11px;flex:1;min-width:150px}
+.legend .li{display:flex;align-items:center;gap:10px;font-size:13.5px}
+.legend .dot{width:11px;height:11px;border-radius:4px;flex:0 0 auto}
+.legend .li .nm{flex:1}
+.legend .li .ct{font-family:"JetBrains Mono",monospace;font-weight:500;font-variant-numeric:tabular-nums}
+.legend .li .pc{color:var(--dim);font-size:11px;font-family:"JetBrains Mono",monospace;width:42px;text-align:right}
+
+/* rating bars */
+.rrow{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.rrow .rk{width:52px;color:var(--star);font-size:12px;letter-spacing:1px;white-space:nowrap}
+.rrow .rt{flex:1;height:8px;border-radius:99px;background:var(--bg-soft);overflow:hidden;border:1px solid var(--border)}
+.rrow .rt > i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#fbbf24);
+  border-radius:99px;transition:width .9s cubic-bezier(.22,1,.36,1)}
+.rrow .rc{width:34px;text-align:right;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* year sparks */
+.years{display:flex;align-items:flex-end;gap:14px;height:130px;padding-top:8px}
+.ybar{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;justify-content:flex-end;height:100%}
+.ybar .col{width:100%;max-width:54px;border-radius:8px 8px 3px 3px;background:var(--grad);
+  height:0;transition:height 1s cubic-bezier(.22,1,.36,1);position:relative;min-height:3px}
+.ybar .col span{position:absolute;top:-20px;left:50%;transform:translateX(-50%);
+  font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.ybar .yl{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--dim)}
+
+/* top authors */
+.arow{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+.arow .an{width:150px;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 0 auto}
+.arow .at{flex:1;height:8px;border-radius:99px;background:var(--bg-soft);overflow:hidden;border:1px solid var(--border)}
+.arow .at > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--blue-lite));
+  border-radius:99px;transition:width .9s cubic-bezier(.22,1,.36,1)}
+.arow .ac{width:26px;text-align:right;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* ---------- EXPLORER ---------- */
+.toolbar{position:sticky;top:0;z-index:20;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px;margin-bottom:20px;backdrop-filter:blur(14px);
+  display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.toolbar .row1{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.search{flex:1;min-width:220px;position:relative}
+.search input{width:100%;height:42px;border-radius:10px;border:1px solid var(--border-strong);
+  background:var(--bg-soft);color:var(--text);padding:0 14px 0 40px;font-family:inherit;font-size:14px;outline:none;
+  transition:border-color .2s, box-shadow .2s}
+.search input:focus{border-color:var(--blue-lite);box-shadow:0 0 0 3px var(--ring)}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--dim)}
+select.ctl{height:42px;border-radius:10px;border:1px solid var(--border-strong);background:var(--bg-soft);
+  color:var(--text);padding:0 34px 0 13px;font-family:inherit;font-size:13.5px;cursor:pointer;outline:none;
+  appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%237c8aa3' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center}
+select.ctl:focus{border-color:var(--blue-lite)}
+.viewtoggle{display:inline-flex;border:1px solid var(--border-strong);border-radius:10px;overflow:hidden}
+.viewtoggle button{height:42px;padding:0 14px;background:var(--bg-soft);color:var(--muted);border:0;cursor:pointer;
+  font-family:"JetBrains Mono",monospace;font-size:12px;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.viewtoggle button.active{background:var(--grad);color:#fff}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{height:32px;padding:0 13px;border-radius:99px;border:1px solid var(--border-strong);background:transparent;
+  color:var(--muted);cursor:pointer;font-family:inherit;font-size:12.5px;display:inline-flex;align-items:center;gap:7px;
+  transition:.15s}
+.chip:hover{border-color:var(--blue-lite);color:var(--text)}
+.chip .c{font-family:"JetBrains Mono",monospace;font-size:11px;opacity:.8;font-variant-numeric:tabular-nums}
+.chip.on{color:var(--text);border-color:transparent;background:var(--grad-soft);box-shadow:inset 0 0 0 1px var(--border-strong)}
+.chip .sd{width:8px;height:8px;border-radius:3px;flex:0 0 auto}
+
+.count{font-size:12.5px;color:var(--dim);font-family:"JetBrains Mono",monospace;margin-bottom:14px}
+.count b{color:var(--text)}
+
+/* card grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:17px;
+  display:flex;flex-direction:column;gap:11px;position:relative;overflow:hidden;
+  transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease}
+.card:hover{transform:translateY(-3px);border-color:var(--border-strong);box-shadow:var(--shadow);background:var(--card-hover)}
+.card .r1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.gtag{font-size:10.5px;font-family:"JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--blue-lite);padding:3px 8px;border-radius:6px;background:var(--grad-soft);border:1px solid var(--border);white-space:nowrap}
+.pill{font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.pill .sd{width:7px;height:7px;border-radius:99px}
+.pill.done{color:var(--done);background:var(--done-bg)}
+.pill.progress{color:var(--progress);background:var(--progress-bg)}
+.pill.wished{color:var(--wished);background:var(--wished-bg)}
+.pill.notstart{color:var(--notstart);background:var(--notstart-bg)}
+.card .title{font-family:"Prompt";font-weight:600;font-size:15.5px;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.1em}
+.card .auth{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:-4px}
+.card .auth svg{width:13px;height:13px;color:var(--dim);flex:0 0 auto}
+.card .r3{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:8px;border-top:1px solid var(--border)}
+.stars{font-size:12.5px;letter-spacing:1px;color:var(--star)}
+.stars .off{color:var(--border-strong)}
+.stars.none{color:var(--dim);font-size:11px;letter-spacing:0;font-family:"JetBrains Mono",monospace}
+.date{font-size:11px;color:var(--dim);font-family:"JetBrains Mono",monospace;display:flex;align-items:center;gap:5px}
+.date svg{width:12px;height:12px}
+
+/* table */
+.tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);background:var(--card)}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:720px}
+thead th{text-align:left;padding:13px 16px;font-family:"JetBrains Mono",monospace;font-size:11px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--surface-solid);white-space:nowrap}
+tbody td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--grad-soft)}
+td.tt{font-weight:500;font-family:"Prompt";max-width:340px}
+td.aa{color:var(--muted)}
+td .stars{font-size:12px}
+.empty{text-align:center;padding:60px 20px;color:var(--dim)}
+.empty .big{font-size:34px;margin-bottom:10px}
+
+/* footer */
+footer{border-top:1px solid var(--border);padding:30px 0 44px;margin-top:20px}
+.foot-in{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.foot-in .l{display:flex;align-items:center;gap:11px;font-size:13px;color:var(--muted)}
+.foot-in .l .mark{width:30px;height:30px;border-radius:8px;background:var(--grad);display:grid;place-items:center;
+  color:#fff;font-family:"Prompt";font-weight:700;font-size:14px}
+.foot-in .r{font-size:11.5px;color:var(--dim);font-family:"JetBrains Mono",monospace}
+
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr;gap:22px}
+  .analytics{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:560px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .brand .who span{display:none}
+  .wrap{padding:0 15px}
+}
+/* add buttons */
+.tbtn.grad{background:var(--grad);color:#fff;border-color:transparent}
+.tbtn.grad:hover{filter:brightness(1.07);border-color:transparent}
+.tbtn .plus{font-size:16px;line-height:1;margin-right:-1px}
+.addbtn{height:42px;padding:0 16px;border-radius:10px;border:0;background:var(--grad);color:#fff;
+  font-family:inherit;font-weight:600;font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+  box-shadow:0 10px 24px -12px var(--blue-glow);transition:transform .12s,filter .2s;white-space:nowrap}
+.addbtn:hover{filter:brightness(1.07)} .addbtn:active{transform:translateY(1px)}
+.addbtn .plus{font-size:18px;line-height:1}
+
+/* new-book marker */
+.r1l{display:flex;gap:6px;align-items:center;min-width:0}
+.newtag{font-family:"JetBrains Mono",monospace;font-size:9px;font-weight:700;letter-spacing:.12em;color:#fff;
+  background:var(--orange);padding:2px 6px;border-radius:5px;line-height:1.5;white-space:nowrap}
+.card.isnew{border-color:var(--orange)}
+
+/* modal */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(6,11,22,.66);backdrop-filter:blur(4px);
+  display:none;align-items:flex-start;justify-content:center;padding:44px 18px;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{width:100%;max-width:520px;background:var(--surface-solid);border:1px solid var(--border-strong);
+  border-radius:18px;box-shadow:0 44px 100px -34px rgba(0,0,0,.75);overflow:hidden;animation:pop .22s ease}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.modal .mh{padding:20px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.modal .mh h3{font-size:19px;font-weight:600}
+.modal .mh .en{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--dim);letter-spacing:.14em;margin-top:4px}
+.modal .x{background:transparent;border:0;color:var(--muted);font-size:24px;cursor:pointer;line-height:1;padding:0 6px;border-radius:8px}
+.modal .x:hover{color:var(--text);background:var(--bg-soft)}
+.mform{padding:20px 22px;display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:12.5px;color:var(--muted);font-weight:500;display:flex;gap:7px;align-items:baseline}
+.field label .en{color:var(--dim);font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.08em}
+.field input,.field select{height:44px;border-radius:10px;border:1px solid var(--border-strong);background:var(--bg-soft);
+  color:var(--text);padding:0 13px;font-family:inherit;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%237c8aa3' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:34px;cursor:pointer}
+.field input:focus,.field select:focus{border-color:var(--blue-lite);box-shadow:0 0 0 3px var(--ring)}
+.field .err{color:#f87171;font-size:11px;display:none}
+.field.invalid input{border-color:#f87171}
+.field.invalid .err{display:block}
+.starpick{display:flex;gap:5px;align-items:center;height:44px}
+.starpick .s{font-size:25px;color:var(--border-strong);cursor:pointer;line-height:1;transition:color .12s,transform .1s;background:none;border:0;padding:0}
+.starpick .s.on{color:var(--star)} .starpick .s:hover{transform:scale(1.15)}
+.starpick .clr{margin-left:8px;font-size:11px;color:var(--dim);background:none;border:0;cursor:pointer;font-family:"JetBrains Mono",monospace}
+.starpick .clr:hover{color:var(--text)}
+.mfoot{padding:16px 22px 22px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--border)}
+.btn-ghost{height:44px;padding:0 18px;border-radius:10px;border:1px solid var(--border-strong);background:transparent;
+  color:var(--text);font-family:inherit;font-size:14px;cursor:pointer}
+.btn-ghost:hover{border-color:var(--muted)}
+.btn-primary{height:44px;padding:0 22px;border-radius:10px;border:0;background:var(--grad);color:#fff;font-family:inherit;font-weight:600;font-size:14px;cursor:pointer}
+.btn-primary:hover{filter:brightness(1.06)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:200;
+  background:var(--surface-solid);border:1px solid var(--border-strong);border-left:4px solid var(--done);
+  color:var(--text);padding:13px 20px;border-radius:12px;font-size:13.5px;box-shadow:var(--shadow);
+  opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;display:flex;align-items:center;gap:9px;max-width:calc(100vw - 36px)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+:focus-visible{outline:2px solid var(--blue-lite);outline-offset:2px}
+@media (max-width:520px){ .mform{grid-template-columns:1fr} }
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="brandbar">
+      <div class="brand">
+        <div class="mark">K</div>
+        <div class="who"><b>KRIDA</b><span>Reading Intelligence · แดชบอร์ดคลังหนังสือ</span></div>
+      </div>
+      <div class="tools">
+        <button class="tbtn grad" id="addBtn2" type="button"><span class="plus">+</span> เพิ่มหนังสือ</button>
+        <button class="tbtn" id="themeBtn" aria-label="Toggle theme"><span id="themeIco">◐</span><span id="themeTxt">Theme</span></button>
+      </div>
+    </div>
+
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow">PUECH · Personal Book Archive</div>
+        <h1>คลังหนังสือ<br><span class="grad-text">ที่ผมได้อ่าน</span></h1>
+        <p class="sub">รวมทุกเล่มที่อ่านจบ กำลังอ่าน และอยากอ่าน พร้อมสถิติการอ่านแบบเรียลไทม์ — จัดหมวดหมู่ ให้คะแนน และติดตามความคืบหน้าได้ในที่เดียว</p>
+        <p class="en">A living archive of everything I've read, am reading, and wish to read — categorised, rated, and tracked.</p>
+      </div>
+
+      <div class="progress-card">
+        <div class="ph"><span class="lab">อ่านจบแล้ว · Finished</span><span class="lab mono" id="pcPct">—</span></div>
+        <div class="big"><span id="pcDoneN">0</span><small id="pcTotal"> / 0 เล่ม</small></div>
+        <div class="bar"><i id="pcBar"></i></div>
+        <div class="foot"><span id="pcFootL">—</span><span id="pcFootR">—</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- KPI STRIP -->
+  <section aria-label="Key stats" style="padding-top:30px">
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section>
+    <div class="sec-head">
+      <div class="t"><h2>ภาพรวมการอ่าน</h2><div class="en">READING ANALYTICS — how the shelf breaks down</div></div>
+    </div>
+    <div class="analytics">
+      <div class="panel">
+        <h3>ความคืบหน้าตามหมวดหมู่ <span class="en">by category</span></h3>
+        <div class="sub-note">สัดส่วนที่อ่านจบเทียบกับจำนวนในลิสต์ · finished vs. in-list</div>
+        <div id="catBars"></div>
+      </div>
+      <div class="stack">
+        <div class="panel">
+          <h3>สถานะหนังสือ <span class="en">status</span></h3>
+          <div class="sub-note" style="margin-bottom:14px">แบ่งตามสถานะการอ่าน</div>
+          <div class="donut-wrap">
+            <div class="donut" id="donut"></div>
+            <div class="legend" id="donutLegend"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>การให้คะแนน <span class="en">ratings</span></h3>
+          <div class="sub-note" style="margin-bottom:14px">เฉพาะเล่มที่ให้คะแนนแล้ว</div>
+          <div id="ratingBars"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="analytics" style="margin-top:20px">
+      <div class="panel">
+        <h3>อ่านจบรายปี <span class="en">finished by year</span></h3>
+        <div class="sub-note">นับจากเล่มที่บันทึกวันที่อ่านจบไว้</div>
+        <div class="years" id="years"></div>
+      </div>
+      <div class="panel">
+        <h3>นักเขียนที่อ่านบ่อยที่สุด <span class="en">top authors</span></h3>
+        <div class="sub-note" style="margin-bottom:16px">เรียงตามจำนวนเล่ม</div>
+        <div id="authors"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPLORER -->
+  <section id="explorer">
+    <div class="sec-head">
+      <div class="t"><h2>สำรวจหนังสือทั้งหมด</h2><div class="en">EXPLORE THE LIBRARY — search, filter & sort</div></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="row1">
+        <div class="search">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="q" type="search" placeholder="ค้นหาชื่อหนังสือหรือนักเขียน… · search title or author" autocomplete="off">
+        </div>
+        <select class="ctl" id="genreSel" aria-label="Genre"></select>
+        <select class="ctl" id="sortSel" aria-label="Sort">
+          <option value="finished">เรียง: อ่านจบล่าสุด · Recently finished</option>
+          <option value="rating">เรียง: คะแนนสูงสุด · Highest rated</option>
+          <option value="title">เรียง: ชื่อ A–Z · Title</option>
+          <option value="author">เรียง: นักเขียน A–Z · Author</option>
+        </select>
+        <div class="viewtoggle" role="group" aria-label="View">
+          <button id="vGrid" class="active" aria-pressed="true">▦ การ์ด</button>
+          <button id="vTable" aria-pressed="false">▤ ตาราง</button>
+        </div>
+        <button class="addbtn" id="addBtn" type="button"><span class="plus">+</span> เพิ่มหนังสือ</button>
+      </div>
+      <div class="chips" id="statusChips"></div>
+    </div>
+
+    <div class="count" id="count"></div>
+    <div id="results"></div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <div class="l"><div class="mark">K</div><div>สร้างโดย <b style="color:var(--text)">KRIDA</b> · Google Workspace &amp; Full-Stack Solutions</div></div>
+    <div class="r">Cyber Kinetic Theme · Live template</div>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="mh">
+      <div><h3 id="modalTitle">เพิ่มหนังสือใหม่</h3><div class="en">ADD A NEW BOOK</div></div>
+      <button class="x" id="modalClose" type="button" aria-label="ปิด">×</button>
+    </div>
+    <form class="mform" id="addForm" novalidate>
+      <div class="field full" id="f-title">
+        <label>ชื่อหนังสือ <span class="en">TITLE *</span></label>
+        <input id="in-title" type="text" placeholder="เช่น Atomic Habits" autocomplete="off">
+        <span class="err">กรุณากรอกชื่อหนังสือ · title is required</span>
+      </div>
+      <div class="field full">
+        <label>นักเขียน <span class="en">AUTHOR</span></label>
+        <input id="in-author" type="text" placeholder="เช่น James Clear" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>หมวดหมู่ <span class="en">GENRE</span></label>
+        <input id="in-genre" list="genreList" placeholder="เลือกหรือพิมพ์ใหม่" autocomplete="off">
+        <datalist id="genreList"></datalist>
+      </div>
+      <div class="field">
+        <label>สถานะ <span class="en">STATUS</span></label>
+        <select id="in-status">
+          <option value="Done">อ่านจบแล้ว · Done</option>
+          <option value="In progress">กำลังอ่าน · In progress</option>
+          <option value="Wished">อยากอ่าน · Wished</option>
+          <option value="Not Start">ยังไม่เริ่ม · Not Start</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>คะแนน <span class="en">RATING</span></label>
+        <div class="starpick" id="starPick" aria-label="ให้คะแนน">
+          <button type="button" class="s" data-v="1" aria-label="1 ดาว">★</button>
+          <button type="button" class="s" data-v="2" aria-label="2 ดาว">★</button>
+          <button type="button" class="s" data-v="3" aria-label="3 ดาว">★</button>
+          <button type="button" class="s" data-v="4" aria-label="4 ดาว">★</button>
+          <button type="button" class="s" data-v="5" aria-label="5 ดาว">★</button>
+          <button type="button" class="clr" id="starClr">ล้าง</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>วันที่อ่านจบ <span class="en">FINISHED</span></label>
+        <input id="in-date" type="date">
+      </div>
+    </form>
+    <div class="mfoot">
+      <button class="btn-ghost" id="cancelBtn" type="button">ยกเลิก</button>
+      <button class="btn-primary" id="saveBtn" type="button">บันทึกหนังสือ</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const BOOKS = [{"title":"หิมาลัยไม่มีจริง","status":"Wished","genre":"Travel","author":"นิ้วกลม","completed":"","rating":0},{"title":"FINDING SISU","status":"Wished","genre":"Self-Dev","author":"Katja Pantzar","completed":"","rating":0},{"title":"My Hygge Home | How to make home your happy place","status":"Wished","genre":"Self-Dev","author":"Meik Wiking","completed":"","rating":0},{"title":"เพราะเราก้าวเดินจึงเกิดทาง","status":"Wished","genre":"Self-Dev","author":"หนุ่มเมืองจันท์","completed":"","rating":0},{"title":"วะบิ ซาบิ","status":"Wished","genre":"Self-Dev","author":"Beth Kempton","completed":"","rating":0},{"title":"The Power of Now","status":"Wished","genre":"Self-Dev","author":"Eckhart Tolle","completed":"","rating":0},{"title":"Mindset: The New Psychology of Success","status":"Wished","genre":"Self-Dev","author":"Carol S. Dweck","completed":"","rating":0},{"title":"The Happiness Pursuit","status":"Wished","genre":"Self-Dev","author":"Chris Guillebeau","completed":"","rating":0},{"title":"Start With Why","status":"Wished","genre":"Self-Dev","author":"Simon Sinek","completed":"","rating":0},{"title":"คู่มือตกแต่งภายในฉบับ DIY","status":"Wished","genre":"Science","author":"Frida Ramstedt","completed":"","rating":0},{"title":"Why we swim","status":"Wished","genre":"Science","author":"Bonnie Tsui","completed":"","rating":0},{"title":"โลกของโซฟี","status":"Wished","genre":"Novel","author":"Jostein Gaarder","completed":"","rating":0},{"title":"เซ็กส์ กับความรักของคนขี้อาย","status":"Wished","genre":"Novel","author":"โจน จันใด","completed":"","rating":0},{"title":"Failing Forward","status":"Wished","genre":"Leader","author":"John C. Maxwell","completed":"","rating":0},{"title":"The Owner Mindset","status":"Done","genre":"Leader","author":"ปราโมทย์ เดชะบุญศิริพานิช","completed":"9/6/2026","rating":5},{"title":"Extreme Ownership","status":"Wished","genre":"Leader","author":"Jocko Willink, Leif Babin","completed":"","rating":0},{"title":"กฎ 30 ข้อ เปลี่ยนวิธีคิดและชีวิต จากคนธรรมดา ให้กลายเป็น \"ผู้ชนะ”","status":"Wished","genre":"Leader","author":"Bodo Schafer","completed":"","rating":0},{"title":"BREATH ลมหายใจมหัศจรรย์","status":"Wished","genre":"Health","author":"James Nestor","completed":"","rating":0},{"title":"ร่างกายดีระดับเซลล์","status":"Wished","genre":"Health","author":"ทะมทสึ โยชิโมริ","completed":"","rating":0},{"title":"สุดยอดการฟื้นฟูร่างกายวิถีสแตนฟอร์ด","status":"Wished","genre":"Health","author":"Tomoo Yamada","completed":"","rating":0},{"title":"ไขความลับ \"กาแฟ\" ที่คนทั่วโลกยังไม่รู้","status":"Wished","genre":"Health","author":"พน จันดารา","completed":"","rating":0},{"title":"ทำไม คนจนยิ่งจน คนรวยยิ่งรวย","status":"Wished","genre":"Financial","author":"หลิว หย่ง เซิง","completed":"","rating":0},{"title":"สรุปทุกอย่างลงในกระดาษแผ่นเดียว","status":"Wished","genre":"Business","author":"อะซะดะ ซุงุรุ","completed":"","rating":0},{"title":"BRANDING THE NATION","status":"Wished","genre":"Business","author":"ลงทุนแมน","completed":"","rating":0},{"title":"ถอดรหัสลับสมองเงินล้าน","status":"Wished","genre":"Business","author":"T. Harv Eker","completed":"","rating":0},{"title":"โสกราตีส","status":"Wished","genre":"Biography","author":"เปลโต","completed":"","rating":0},{"title":"David Ogilvy | คำสารภาพของคนโฆษณา","status":"Wished","genre":"Biography","author":"David Ogilvy","completed":"","rating":0},{"title":"The Spotify Play","status":"Wished","genre":"Biography","author":"Sven Carlsson, Jonas Leijonhfvud","completed":"","rating":0},{"title":"The 7 Habits of Highly Effective People","status":"Not Start","genre":"Self-Dev","author":"Stephen R. Covey","completed":"","rating":0},{"title":"เดอะท็อปซีเคร็ต II","status":"Not Start","genre":"Self-Dev","author":"ทันตแพทย์สม สุจีรา","completed":"","rating":0},{"title":"จิตวิทยาความฝัน","status":"Not Start","genre":"Self-Dev","author":"Sigmund Freud","completed":"","rating":0},{"title":"สิ่งสำคัญของหัวใจ","status":"Not Start","genre":"People","author":"นิ้วกลม","completed":"","rating":0},{"title":"36 กลยุทธ์","status":"Not Start","genre":"Business","author":"หลิว หย่ง เซิง","completed":"","rating":0},{"title":"AS THE FUTURE CATCHES YOU","status":"Not Start","genre":"Business","author":"Juan Enriquez","completed":"","rating":0},{"title":"ต้นส้มแสนรัก","status":"In progress","genre":"Novel","author":"โคเซ เมาโร เดอ วาสคอนเซลอส","completed":"","rating":0},{"title":"13 Things Mentally Strong People Don’t Do","status":"In progress","genre":"Self-Dev","author":"Amy Morin","completed":"","rating":0},{"title":"คิดจะไปดวงจันทร์ อย่าหยุดแค่ปากซอย","status":"Done","genre":"Business","author":"รวิศ หาญอุตสาหะ","completed":"22/5/2026","rating":5},{"title":"One Hundred Years of Solitude | 100 ปีแห่งความโดดเดี่ยว","status":"In progress","genre":"Novel","author":"Garbriel Garcia Marquez","completed":"","rating":0},{"title":"52 เฮิรตซ์ คลื่นเสียงที่ไม่มีใครได้ยิน","status":"In progress","genre":"Novel","author":"มาจิดะ โซโนะโกะ","completed":"","rating":0},{"title":"“รัก” พาตัว","status":"In progress","genre":"Novel","author":"Nangiya Yu","completed":"","rating":0},{"title":"Hong Kong Remembered","status":"In progress","genre":"History","author":"Fergal Keane","completed":"","rating":0},{"title":"Sapiens A Brief History of Humankind","status":"In progress","genre":"History","author":"Yuval Noah Harari","completed":"","rating":0},{"title":"Vitamin Bible","status":"In progress","genre":"Health","author":"ดร.เอิร์ล มินเดลล์","completed":"","rating":0},{"title":"The Man Searching For Meaning","status":"In progress","genre":"Biography","author":"Viktor E. Frankl","completed":"","rating":0},{"title":"มั่งคั่งทั้งชีวิต","status":"Done","genre":"Financial","author":"ภัทรพล ศิลปาจารย์","completed":"","rating":5},{"title":"Supercommunicators | ยอดมนุษย์นักสื่อสาร","status":"Done","genre":"People","author":"Charles Duhigg","completed":"","rating":0},{"title":"พลิกโชคชะตา ด้วยวิธีคิดแบบเถ้าแก่จีนยุคใหม่","status":"Done","genre":"Self-Dev","author":"อู๋จวิน","completed":"18/4/2026","rating":5},{"title":"ไล่ตงจิ้น ขอทานผู้ไม่ยอมแพ้โชคชะตา","status":"Done","genre":"Biography","author":"ไล่ตงจิ้น","completed":"15/2/2026","rating":5},{"title":"40 เรื่องเล่าอ่านแล้วชีวิตโคตรดี","status":"Done","genre":"Self-Dev","author":"Pat Inspire จุดไฟใ่ฝัน","completed":"26/8/2025","rating":5},{"title":"ปัญญาแห่งพิชัยสงคราม","status":"Done","genre":"Business","author":"หลิว หย่ง เซิง","completed":"15/6/2025","rating":5},{"title":"The explorer คนประสบความสำเร็จคือนักผจญภัย","status":"Done","genre":"Travel","author":"รัฐธีร์ ชาญชิปวิณณัช","completed":"17/9/2025","rating":5},{"title":"อนาคตที่ AI ทำอะไรคุณไม่ได้","status":"Done","genre":"Self-Dev","author":"ทาซากะ ฮิโรชิ","completed":"23/9/2025","rating":4},{"title":"คิดมากไปทำไม ขนาดพระพุทธเจ้ายังเคยทำพลาดเลย","status":"Done","genre":"History","author":"ฟุกาอิ ริวโนะซุเกะ","completed":"6/9/2025","rating":5},{"title":"กัมบัตเตะ ล้มเจ็ดครั้งลุกแปดครั้ง","status":"Done","genre":"Self-Dev","author":"โนบูโอะ ซูซูกิ","completed":"12/8/2025","rating":5},{"title":"HIDDEN POTENTIAL","status":"Done","genre":"Self-Dev","author":"Adam Grant","completed":"28/7/2025","rating":5},{"title":"คำถามร้อยบาท กับ คำถามล้านบาท","status":"Done","genre":"Self-Dev","author":"อานนทธวงศ์ มฤคพิทักษ์","completed":"29/6/2025","rating":5},{"title":"Manifest: Dive Deeper","status":"Done","genre":"Self-Dev","author":"Roxie Nafousi","completed":"22/5/2025","rating":4},{"title":"คู่มือมนุษย์","status":"Done","genre":"Self-Dev","author":"ท่านพุทธทาสภิกขุ","completed":"13/5/2025","rating":5},{"title":"Mindfulness in action","status":"Done","genre":"Self-Dev","author":"ดร.วรภัทร์ ภู่เจริญ","completed":"10/5/2025","rating":5},{"title":"เลิกเป็นมนุษย์คิดเยอะ!","status":"Done","genre":"Self-Dev","author":"บาบะ เคสุเกะ","completed":"7/4/2025","rating":5},{"title":"EGO IS THE ENEMY","status":"Done","genre":"Self-Dev","author":"Ryan Holiday","completed":"1/4/2025","rating":5},{"title":"MANIFAST","status":"Done","genre":"Self-Dev","author":"Roxie Nafousi","completed":"3/12/2024","rating":5},{"title":"กิเลส Management","status":"Done","genre":"Self-Dev","author":"ว.วชิรเมธี","completed":"8/11/2024","rating":5},{"title":"ชีวิตที่ร่างเอง","status":"Done","genre":"Self-Dev","author":"นิ้วกลม","completed":"","rating":5},{"title":"The Top Secret","status":"Done","genre":"Self-Dev","author":"สม สุจีรา","completed":"","rating":5},{"title":"สิ่งมหัศจรรย์ธรรมดา","status":"Done","genre":"Self-Dev","author":"นิ้วกลม","completed":"","rating":5},{"title":"INSPIRE | เราต่างเป็นแรงบันดาลใจให้แก่กัน","status":"Done","genre":"Self-Dev","author":"หนุ่มเมืองจันท์","completed":"","rating":5},{"title":"นิทานเซ็น มหรสพทางวิญญาณเพื่อจริยธรรม","status":"Done","genre":"Self-Dev","author":"พุทธทาสภิกขุ","completed":"","rating":5},{"title":"มองโลกง่ายง่ายสบายดี","status":"Done","genre":"Self-Dev","author":"หนุ่มเมืองจันท์","completed":"","rating":5},{"title":"ถ้าอีก 1 ปีฉันจะต้องตาย…","status":"Done","genre":"Self-Dev","author":"นพ.โอซาวะ ทาเคโทชิ","completed":"","rating":5},{"title":"How to live a good life","status":"Done","genre":"Self-Dev","author":"นิ้วกลม","completed":"","rating":5},{"title":"ให้ความสุขตามหาเรา","status":"Done","genre":"Self-Dev","author":"หนุ่มเมืองจันท์","completed":"","rating":5},{"title":"The magic of THINKING BIG","status":"Done","genre":"Self-Dev","author":"David J. Schwartz","completed":"","rating":5},{"title":"คนชนะทำแล้วแก้ คนแพ้มัวแต่คิดไม่ได้ทำ","status":"Done","genre":"Self-Dev","author":"คานางาวะ อากิโนริ","completed":"","rating":5},{"title":"งานไม่ประจำ 2 อิสระเราราคาเท่าไหร่?","status":"Done","genre":"Self-Dev","author":"วิสูตร แสงอรุณเลิศ","completed":"","rating":5},{"title":"The Archer | ปราชญ์แห่งธนู","status":"Done","genre":"Self-Dev","author":"Paulo Coelho","completed":"","rating":5},{"title":"Good Vibes Good Life","status":"Done","genre":"Self-Dev","author":"Vex King","completed":"","rating":5},{"title":"โลกนี้ไม่มีใครที่ไร้ค่า","status":"Done","genre":"Self-Dev","author":"หนุ่มเมืองจันท์","completed":"","rating":5},{"title":"The Power of Self-confidence","status":"Done","genre":"Self-Dev","author":"Brian Tracy","completed":"","rating":5},{"title":"ช้าให้ชนะ หลักคิดจากเทพเจ้าแห่งการบริหารของญี่ปุ่น","status":"Done","genre":"Self-Dev","author":"คาซุโอะ อินาโมริ","completed":"","rating":5},{"title":"กรรมตามสมอง","status":"Done","genre":"Self-Dev","author":"ขุนเขา","completed":"","rating":5},{"title":"Four Thousand Weeks | Time management for morals","status":"Done","genre":"Self-Dev","author":"Oliver Burkeman","completed":"","rating":5},{"title":"ชีวิตดีขึ้นทุกๆ ด้าน ด้วยการจัดบ้านแค่ครั้งเดียว","status":"Done","genre":"Self-Dev","author":"Marie Kondo","completed":"","rating":5},{"title":"พลังของคนที่กล้าทำอะไรคนเดียว","status":"Done","genre":"Self-Dev","author":"Tokio Godo","completed":"","rating":5},{"title":"Power Of When","status":"Done","genre":"Self-Dev","author":"Michael Breus, Ph.D.","completed":"","rating":4},{"title":"The 5 Secrets You Must Discover Before You Die","status":"Done","genre":"Self-Dev","author":"John Izzo","completed":"","rating":5},{"title":"Make Your Bed","status":"Done","genre":"Self-Dev","author":"William H. McRaven","completed":"","rating":5},{"title":"Homofinisher","status":"Done","genre":"Self-Dev","author":"นิ้วกลม","completed":"","rating":5},{"title":"สมองเศรษฐี","status":"Done","genre":"Self-Dev","author":"ขุนเขา","completed":"","rating":5},{"title":"Atomic Habits","status":"Done","genre":"Self-Dev","author":"James Clear","completed":"","rating":5},{"title":"เปลี่ยนเรื่องร้ายให้กลายเป็นดีด้วยวิธีเลิกบ่น","status":"Done","genre":"Self-Dev","author":"Jon Gordon","completed":"","rating":5},{"title":"Eat That Frog","status":"Done","genre":"Self-Dev","author":"Brian Tracy","completed":"","rating":5},{"title":"Into the Magic Shop","status":"Done","genre":"Self-Dev","author":"James R. Doty","completed":"","rating":5},{"title":"ความเข้าใจของชีวิต","status":"Done","genre":"Self-Dev","author":"UNKNOWN","completed":"","rating":3},{"title":"As A Man Thinketh","status":"Done","genre":"Self-Dev","author":"James Allen","completed":"","rating":5},{"title":"ทักษะความสุข","status":"Done","genre":"Self-Dev","author":"นิ้วกลม","completed":"","rating":5},{"title":"The Little book of LYKKE the Danish search for the world’s happiest people","status":"Done","genre":"Self-Dev","author":"Meik Wiking","completed":"","rating":5},{"title":"The Why Cafe","status":"Done","genre":"Self-Dev","author":"John Strelecky","completed":"","rating":5},{"title":"How will you measure your life?","status":"Done","genre":"Self-Dev","author":"Christensen, Clayton / Allworth, James / Dillon, Karen","completed":"","rating":5},{"title":"Life วิธีใช้ชีวิตที่มนุษย์ไม่รู้","status":"Done","genre":"Self-Dev","author":"Haro Aso","completed":"","rating":5},{"title":"The First 20 hours","status":"Done","genre":"Self-Dev","author":"Josh Kaufman","completed":"","rating":5},{"title":"ความสุขฉบับพกพา","status":"Done","genre":"Self-Dev","author":"นิ้วกลม","completed":"","rating":5},{"title":"หนังยางล้างใจ","status":"Done","genre":"Self-Dev","author":"วิสูตร แสงอรุณเลิศ","completed":"","rating":5},{"title":"Situation Matters","status":"Done","genre":"Self-Dev","author":"Sam Sommers","completed":"","rating":5},{"title":"GOALS!","status":"Done","genre":"Self-Dev","author":"Brian Tracy","completed":"","rating":5},{"title":"The One Thing","status":"Done","genre":"Self-Dev","author":"Gary Keller, Jay Papasan","completed":"","rating":5},{"title":"Kiss That Frog","status":"Done","genre":"Self-Dev","author":"Brian Tracy","completed":"","rating":5},{"title":"Think and Grow Rich","status":"Done","genre":"Self-Dev","author":"Napolean Hill","completed":"","rating":5},{"title":"เพราะเป็นวัยรุ่นจึงเจ็บปวด","status":"Done","genre":"Self-Dev","author":"Rando Kim","completed":"","rating":5},{"title":"อิคิไก วิถีชีวิตเรียบง่ายสไตล์ญี่ปุ่น","status":"Done","genre":"Self-Dev","author":"Hector Garcia, Francesc Miralles","completed":"","rating":4},{"title":"Have a nice life","status":"Done","genre":"Self-Dev","author":"นิ้วกลม","completed":"","rating":5},{"title":"100 Life Lessons","status":"Done","genre":"Self-Dev","author":"นิ้วกลม","completed":"","rating":5},{"title":"What is LIFE | ชีวิตผ่านมุมมองฟิสิกส์","status":"Done","genre":"Science","author":"Erwin Schrodinger","completed":"","rating":3},{"title":"7 1/2 Lessons about the brain","status":"Done","genre":"Science","author":"Lisa Feldman Barrett","completed":"","rating":5},{"title":"ทำไมคุยกับคนนี้แล้วรู้สึกดีจัง","status":"Done","genre":"People","author":"โยะชิดะ ฮิซะโนะริ","completed":"1/5/2025","rating":5},{"title":"ชาล้นถ้วย","status":"Done","genre":"People","author":"ว.วชิรเมธี","completed":"","rating":5},{"title":"The 5 Love Languages | ภาษารัก","status":"Done","genre":"People","author":"Gary Demonte Chapman","completed":"","rating":5},{"title":"It’s not about you | ยิ่งให้ยิ่งชนะ","status":"Done","genre":"People","author":"Bob Berg & John David Mann","completed":"","rating":5},{"title":"How to Win Friends and Influence People","status":"Done","genre":"People","author":"Dale Carnegie","completed":"","rating":5},{"title":"Go Giver","status":"Done","genre":"People","author":"Bob Burg, John David Mann","completed":"","rating":5},{"title":"คำถามฉุกคิดเปลี่ยนชีวิตทั้งคนถามและคนตอบ","status":"Done","genre":"People","author":"Andrew Sobel, Jerold Panas","completed":"","rating":5},{"title":"สื่อสารเป็นเห็นชัยชนะ","status":"Done","genre":"People","author":"John C. Maxwell","completed":"","rating":5},{"title":"จุดอ่อนของมนุษย์","status":"Done","genre":"People","author":"หลิว หย่ง เซิง","completed":"","rating":5},{"title":"Love does","status":"Done","genre":"People","author":"Bob Goff","completed":"","rating":3},{"title":"พระในบ้าน","status":"Done","genre":"People","author":"UNKNOWN","completed":"","rating":3},{"title":"The Alchemist","status":"Done","genre":"Novel","author":"Paulo Coelho","completed":"","rating":5},{"title":"อัศวินอุตุ กับปีศาจทั้ง 8","status":"Done","genre":"Novel","author":"ขุนเขา","completed":"","rating":5},{"title":"Feng Shui | ฮวงจุ้ย บ้านและห้องพักสำหรับคนทุกอาชีพ","status":"Done","genre":"Novel","author":"ม.อึ้งอรุณ","completed":"","rating":4},{"title":"เจ้าชายน้อย","status":"Done","genre":"Novel","author":"Antoine de Saint-Exupery","completed":"","rating":4},{"title":"แด่หนุ่มสาว (For the young)","status":"Done","genre":"Novel","author":"กฤษณมูรติ","completed":"","rating":5},{"title":"LOST 1st sign เสียงเรียกของทองคำ","status":"Done","genre":"Novel","author":"กัลฐิดา","completed":"","rating":3},{"title":"คิดให้ใหญ่คิดให้สำเร็จ | HOW SUCCESSFUL PEOPLE THINK","status":"Done","genre":"Leader","author":"John C. Maxwell","completed":"19/2/2025","rating":5},{"title":"Leadership Gold","status":"Done","genre":"Leader","author":"John C. Maxwell","completed":"","rating":5},{"title":"The Promise Keeper","status":"Done","genre":"Leader","author":"รัฐธีร์ ชาญชินปวิณณัช","completed":"","rating":5},{"title":"ความรับผิดชอบสำคัญกว่าความสามารถ","status":"Done","genre":"Leader","author":"หลิว หย่ง เซิง","completed":"","rating":5},{"title":"The Believer","status":"Done","genre":"Leader","author":"รัฐธีร์ ชาญชินปวิณณัช","completed":"","rating":5},{"title":"The Miracle Maker","status":"Done","genre":"Leader","author":"รัฐธีร์ ชาญชินปวิณณัช","completed":"","rating":5},{"title":"The Self-awareness Leader","status":"Done","genre":"Leader","author":"John C. Maxwell","completed":"","rating":5},{"title":"หัวใจ พลังที่เป็นความหมายของชีวิต | KOKORO","status":"Done","genre":"Leader","author":"Kazuo Inamori","completed":"","rating":5},{"title":"เรื่องเล่าของน้ำตาล","status":"Done","genre":"Health","author":"มากิตะ เซ็นจิ","completed":"17/5/2025","rating":5},{"title":"ซีรีย์สนุกจนตาสว่าง เล่าเรื่องโปรตีน กินแบบนี้สุขภาพดีแน่","status":"Done","genre":"Health","author":"ศาสตราจารย์ฟูจิตะ ซาโตชิ","completed":"18/3/2025","rating":5},{"title":"ซีรีย์สนุกจนตาสว่าง เรื่องราวของ \"ไขมันในร่างกาย\"","status":"Done","genre":"Health","author":"ทสึจิดะ ทาคาชิ","completed":"25/2/2025","rating":5},{"title":"ซีรีย์สนุกจนตาสว่าง เรื่องราวของ \"ไขมันช่องท้อง\"","status":"Done","genre":"Health","author":"คุริฮาระ ทาเคชิ","completed":"21/2/2025","rating":5},{"title":"Lean Smart Science","status":"Done","genre":"Health","author":"ฟ้าใส พึ่งอุดม","completed":"","rating":5},{"title":"สุขภาพดีอายุ 100 ปี คุณก็มีได้","status":"Done","genre":"Health","author":"หมอแอมป์","completed":"","rating":5},{"title":"รู้งี้ผอมไปนานแล้ว","status":"Done","genre":"Health","author":"โรสแมรี่","completed":"","rating":5},{"title":"Anti-Aging","status":"Done","genre":"Health","author":"พญ. ธิดากานต์ รุจิพัฒนกุล","completed":"","rating":5},{"title":"กิน 100% ก็ผอมได้","status":"Done","genre":"Health","author":"Takurou Mori","completed":"","rating":5},{"title":"Money Mastery มั่งคั่งทั้งชีวิต","status":"Done","genre":"Financial","author":"ภัทรพล ศิลปาจารย์","completed":"6/8/2025","rating":5},{"title":"Money Mindset","status":"Done","genre":"Financial","author":"จักรพงษ์ เมฆพันธ์","completed":"","rating":5},{"title":"The Psychology of Money","status":"Done","genre":"Financial","author":"Morgan Housel","completed":"","rating":5},{"title":"Money Hack","status":"Done","genre":"Financial","author":"Lisa Rowan","completed":"","rating":5},{"title":"Rich Dad Poor Dad | เงินสี่ด้าน","status":"Done","genre":"Financial","author":"Robert Kiyosaki","completed":"","rating":5},{"title":"The Rich Dad Poor Dad","status":"Done","genre":"Financial","author":"Robert Kiyosaki","completed":"","rating":5},{"title":"The Richest Man in Babylon","status":"Done","genre":"Financial","author":"George Samuel Clason","completed":"","rating":5},{"title":"MONEY 101","status":"Done","genre":"Financial","author":"จักรพงษ์ เมษพันธุ์","completed":"","rating":5},{"title":"เล่นหุ้นออนไลน์ไม่ยาก","status":"Done","genre":"Financial","author":"วีรวัฒน์ วีรวรรณ","completed":"","rating":3},{"title":"กองทุนรวม 101","status":"Done","genre":"Financial","author":"ธนัฐ ศิริวรางกูร","completed":"","rating":4},{"title":"ปัญญาแห่งพิชัยสงคราม","status":"Done","genre":"Business","author":"หลิว หย่ง เซิง","completed":"15/6/2025","rating":4},{"title":"หมวก 6 ใบ คิด 6 แบบ","status":"Done","genre":"Business","author":"Edward De Bono","completed":"1/6/2025","rating":5},{"title":"Personalize Marketing | การตลาดแบบรู้ใจ","status":"Done","genre":"Business","author":"ณัฐพล ม่วงทำ","completed":"28/1/2025","rating":4},{"title":"CRAFT Save The Dream","status":"Done","genre":"Business","author":"พี่ตั้ม","completed":"28/11/2024","rating":5},{"title":"The Greatest Salesman in the world","status":"Done","genre":"Business","author":"Og Mandino","completed":"","rating":5},{"title":"ทำไม Netflix ถึงมีแต่คนโคตรเก่ง","status":"Done","genre":"Business","author":"Patty McCord","completed":"","rating":5},{"title":"Energy Bus | รถบัส พลังชีวิต","status":"Done","genre":"Business","author":"Jon Gordon","completed":"","rating":5},{"title":"Dare to Fail","status":"Done","genre":"Business","author":"Billi Lim","completed":"","rating":5},{"title":"เหนื่อยชั่วคราว สบายชั่วโคตร","status":"Done","genre":"Business","author":"ภัทรพล ศิลปาจารย์ (พอล)","completed":"","rating":5},{"title":"งานไม่ประจำทำเงินกว่า","status":"Done","genre":"Business","author":"วิสูตร แสงอรุณเลิศ","completed":"","rating":5},{"title":"The Invisible Leader","status":"Done","genre":"Business","author":"นครินทร์ วนกิจไพบูลย์","completed":"","rating":5},{"title":"The Possible Dream","status":"Done","genre":"Business","author":"Charles Paul Conn","completed":"","rating":5},{"title":"ขายได้ตั้งแต่ยังไม่ทันขาย","status":"Done","genre":"Business","author":"Takeshi Aoki","completed":"","rating":5},{"title":"The Sales Master","status":"Done","genre":"Business","author":"รัฐธีร์ ชาญชินปวิณณัช","completed":"","rating":5},{"title":"10 วิถีสู่ความร่ํารวย","status":"Done","genre":"Business","author":"KEN FISHER, LARA W. HOFFMANS และ ELLSABETH DELINGER","completed":"","rating":3},{"title":"ทำไมรถไฟเหาะของ USJ ถึงวิ่งถอยหลัง","status":"Done","genre":"Business","author":"Tsuyoshi Morioka","completed":"","rating":5},{"title":"ล้ม ลุก เรียน รู้","status":"Done","genre":"Business","author":"ธนา เธียรอัจฉริยะ","completed":"","rating":5},{"title":"Brand Storydoing Wins","status":"Done","genre":"Business","author":"คุณดลชัย บุณยะรัตเวช","completed":"","rating":5},{"title":"จะสำเร็จในธุรกิจแอมเวย์ได้อย่างไร","status":"Done","genre":"Business","author":"UNKNOW","completed":"","rating":3},{"title":"ยังไม่สายเกินไปสำหรับการเริ่มต้น","status":"Done","genre":"Business","author":"Kaoru Nakajuma","completed":"","rating":5},{"title":"The Obstacle is the Way","status":"Done","genre":"Business","author":"Ryan Holiday","completed":"","rating":5},{"title":"เรื่องธรรมดาสามัญประจำบ้าน","status":"Done","genre":"Business","author":"หนุ่มเมืองจันท์","completed":"","rating":5},{"title":"You can’t send a DUCK to EAGLE school.","status":"Done","genre":"Business","author":"Mac Anderson","completed":"","rating":5},{"title":"เห็นได้ก่อนใครใน 1 ย่อหน้า","status":"Done","genre":"Business","author":"กวีวุฒิ เต็มภูวภัทร","completed":"","rating":4},{"title":"จากสิบสู่อนันต์","status":"Done","genre":"Biography","author":"ฟ่านไห่เทา","completed":"15/8/2025","rating":5},{"title":"Rhapsody in blues | เมื่อเธอมีบทเพลง…ขอจงบรรเลงไป","status":"Done","genre":"Biography","author":"ตั้ม จินตา","completed":"17/12/2024","rating":5},{"title":"ONE DAY FADEAWAY, SO CLOSE","status":"Done","genre":"Biography","author":"ตั้ม จินตา","completed":"9/12/2024","rating":5},{"title":"Craft Save the Dream","status":"Done","genre":"Biography","author":"ตั้ม จินตา","completed":"28/11/2024","rating":5},{"title":"ความสำเร็จดีใจได้วันเดียว","status":"Done","genre":"Biography","author":"ธนินท์ เจียรวนนท์","completed":"","rating":5},{"title":"Move Heaven And Earth","status":"Done","genre":"Biography","author":"กระทิง พูนผล","completed":"","rating":5},{"title":"เด็กวัดดอน","status":"Done","genre":"Biography","author":"นิเวศน์ เหมวชิรวรากร","completed":"","rating":5},{"title":"รวยอย่างริช","status":"Done","genre":"Biography","author":"Richard DeVos","completed":"","rating":5},{"title":"มูซาชิ","status":"Done","genre":"Biography","author":"สุวินัย ภรณวลัย","completed":"","rating":5},{"title":"สิ่งสำคัญของชีวิต","status":"Done","genre":"Biography","author":"นิ้วกลม","completed":"","rating":5},{"title":"Define Your Destiny","status":"Done","genre":"Biography","author":"พิบูลย์ ดิษฐอุดม","completed":"","rating":5},{"title":"คาโอรุ นากาจิมา หนุ่มโสดที่ร่ำรวยที่สุดในโลก","status":"Done","genre":"Biography","author":"UNKNOWN","completed":"","rating":4},{"title":"บูชิโด วิถีนักรบซามูไร | Bushido","status":"Done","genre":"Biography","author":"Tsunetomo Yamamoto","completed":"","rating":3}];
+
+/* viewer-added books persist per browser (localStorage) */
+const ADDED_KEY = "krida-puech-books-added";
+function loadAdded(){ try{ return JSON.parse(localStorage.getItem(ADDED_KEY))||[]; }catch(e){ return []; } }
+function saveAdded(arr){ try{ localStorage.setItem(ADDED_KEY, JSON.stringify(arr)); }catch(e){} }
+let addedBooks = loadAdded();
+addedBooks.forEach(b=>{ b._new=true; BOOKS.push(b); });
+
+const STATUS = {
+  "Done":       {th:"อ่านจบแล้ว", en:"Done",        cls:"done",     color:"var(--done)"},
+  "In progress":{th:"กำลังอ่าน",  en:"In progress", cls:"progress", color:"var(--progress)"},
+  "Wished":     {th:"อยากอ่าน",   en:"Wished",      cls:"wished",   color:"var(--wished)"},
+  "Not Start":  {th:"ยังไม่เริ่ม", en:"Not Start",   cls:"notstart", color:"var(--notstart)"}
+};
+const STATUS_ORDER = ["Done","In progress","Wished","Not Start"];
+const reduceMotion = matchMedia("(prefers-reduced-motion:reduce)").matches;
+let ANIM = true; /* animate count-ups only on first paint */
+
+/* ---------- helpers ---------- */
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function parseDate(s){ if(!s) return null; const m=s.split("/"); if(m.length!==3) return null;
+  const d=+m[0],mo=+m[1]-1,y=+m[2]; const dt=new Date(y,mo,d); return isNaN(dt)?null:dt; }
+function starHTML(n){ if(!n) return '<span class="stars none">— ยังไม่ให้คะแนน</span>';
+  let s=""; for(let i=1;i<=5;i++) s+= i<=n?"★":'<span class="off">★</span>'; return '<span class="stars">'+s+'</span>'; }
+
+/* ---------- stats ---------- */
+function computeStats(bs){
+  const total=bs.length;
+  const byStatus={}; STATUS_ORDER.forEach(s=>byStatus[s]=0);
+  bs.forEach(b=>{ byStatus[b.status]=(byStatus[b.status]||0)+1; });
+  const done=byStatus["Done"]||0;
+
+  const cats={};
+  bs.forEach(b=>{ const g=b.genre||"—"; (cats[g]=cats[g]||{inlist:0,done:0}); cats[g].inlist++; if(b.status==="Done")cats[g].done++; });
+
+  const rated=bs.filter(b=>b.rating>0);
+  const ratingDist={5:0,4:0,3:0,2:0,1:0}; rated.forEach(b=>ratingDist[b.rating]++);
+  const avg = rated.length? rated.reduce((a,b)=>a+b.rating,0)/rated.length : 0;
+  const fiveStar = ratingDist[5];
+
+  const years={};
+  bs.forEach(b=>{ const d=parseDate(b.completed); if(d) years[d.getFullYear()]=(years[d.getFullYear()]||0)+1; });
+
+  const auth={};
+  bs.forEach(b=>{ let a=(b.author||"").trim(); if(!a||/^unknow/i.test(a))return; auth[a]=(auth[a]||0)+1; });
+  const topAuthors=Object.entries(auth).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const authorCount=Object.keys(auth).length;
+
+  return {total,byStatus,done,cats,ratingDist,avg,fiveStar,rated:rated.length,years,topAuthors,authorCount};
+}
+
+/* ---------- count up ---------- */
+function countUp(el,to,dur=1000,suffix=""){
+  if(reduceMotion||!ANIM){ el.textContent=to+suffix; return; }
+  const start=performance.now();
+  (function tick(t){ const p=Math.min(1,(t-start)/dur); const e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(to*e)+suffix; if(p<1)requestAnimationFrame(tick); })(start);
+}
+
+/* ---------- render analytics ---------- */
+let S = computeStats(BOOKS);
+
+function renderHeroAndKpis(){
+  const pct = S.total? Math.round(S.done/S.total*1000)/10 : 0;
+  countUp(document.getElementById("pcDoneN"),S.done,1100);
+  document.getElementById("pcTotal").textContent=" / "+S.total+" เล่ม";
+  document.getElementById("pcPct").textContent=pct+"%";
+  document.getElementById("pcFootL").textContent="กำลังอ่าน "+S.byStatus["In progress"]+" · อยากอ่าน "+S.byStatus["Wished"];
+  document.getElementById("pcFootR").textContent="Not started "+S.byStatus["Not Start"];
+  requestAnimationFrame(()=>{ document.getElementById("pcBar").style.width=pct+"%"; });
+
+  const kpis=[
+    {n:S.total, l:"หนังสือทั้งหมด", en:"TOTAL BOOKS"},
+    {n:S.done, l:"อ่านจบแล้ว", en:"FINISHED", u:""},
+    {n:S.byStatus["In progress"], l:"กำลังอ่าน", en:"READING NOW"},
+    {n:S.byStatus["Wished"], l:"อยากอ่าน", en:"WISHLIST"},
+    {n:S.avg.toFixed(2), l:"คะแนนเฉลี่ย", en:"AVG RATING", star:true, u:"★"},
+    {n:S.fiveStar, l:"หนังสือ 5 ดาว", en:"FIVE-STAR", star:true}
+  ];
+  const wrap=document.getElementById("kpis");
+  wrap.innerHTML=kpis.map(k=>`<div class="kpi${k.star?' star':''}">
+    <div class="n"><span data-n="${k.n}">0</span>${k.u?`<span class="u">${k.u}</span>`:""}</div>
+    <div class="l">${k.l}<span class="en">${k.en}</span></div></div>`).join("");
+  wrap.querySelectorAll("[data-n]").forEach(el=>{
+    const v=el.getAttribute("data-n");
+    if(String(v).includes(".")){ if(reduceMotion||!ANIM){el.textContent=v;} else {
+      const start=performance.now(); (function tick(t){const p=Math.min(1,(t-start)/1000);const e=1-Math.pow(1-p,3);
+      el.textContent=(parseFloat(v)*e).toFixed(2); if(p<1)requestAnimationFrame(tick);})(start);} }
+    else countUp(el,+v,1000);
+  });
+}
+
+function renderCategoryBars(){
+  const rows=Object.entries(S.cats).map(([g,v])=>({g,...v,pct:v.inlist?v.done/v.inlist*100:0}))
+    .sort((a,b)=>b.pct-a.pct || b.inlist-a.inlist);
+  document.getElementById("catBars").innerHTML=rows.map(r=>`
+    <div class="catrow">
+      <div class="top"><span class="name">${esc(r.g)}</span>
+        <span class="val"><b>${r.done}</b>/${r.inlist} · ${Math.round(r.pct)}%</span></div>
+      <div class="ctrack"><i data-w="${r.pct}"></i></div>
+    </div>`).join("");
+  animateBars("#catBars .ctrack > i");
+}
+
+function renderDonut(){
+  const size=168,r=68,cx=84,cy=84,C=2*Math.PI*r,gap=2;
+  let off=0; const segs=[];
+  STATUS_ORDER.forEach(s=>{
+    const val=S.byStatus[s]||0; if(!val)return;
+    const frac=val/S.total, len=frac*C;
+    segs.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${STATUS[s].color}"
+      stroke-width="20" stroke-dasharray="${Math.max(0,len-gap)} ${C-Math.max(0,len-gap)}"
+      stroke-dashoffset="${-off}" stroke-linecap="round" style="transition:stroke-dasharray .9s ease"/>`);
+    off+=len;
+  });
+  document.getElementById("donut").innerHTML=
+    `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg-soft)" stroke-width="20"/>
+      ${segs.join("")}
+    </svg><div class="center"><b>${S.total}</b><span>เล่ม · books</span></div>`;
+  document.getElementById("donutLegend").innerHTML=STATUS_ORDER.map(s=>{
+    const v=S.byStatus[s]||0, pc=S.total?Math.round(v/S.total*100):0;
+    return `<div class="li"><span class="dot" style="background:${STATUS[s].color}"></span>
+      <span class="nm">${STATUS[s].th} <span style="color:var(--dim);font-size:11px">${STATUS[s].en}</span></span>
+      <span class="ct">${v}</span><span class="pc">${pc}%</span></div>`;
+  }).join("");
+}
+
+function renderRatings(){
+  const max=Math.max(1,...Object.values(S.ratingDist));
+  let html="";
+  for(let k=5;k>=1;k--){ const v=S.ratingDist[k]; const w=v/max*100;
+    html+=`<div class="rrow"><span class="rk">${"★".repeat(k)}</span>
+      <span class="rt"><i data-w="${w}"></i></span><span class="rc">${v}</span></div>`; }
+  document.getElementById("ratingBars").innerHTML=html;
+  animateBars("#ratingBars .rt > i");
+}
+
+function renderYears(){
+  const ys=Object.keys(S.years).map(Number).sort();
+  const max=Math.max(1,...Object.values(S.years));
+  const el=document.getElementById("years");
+  if(!ys.length){ el.innerHTML='<div class="sub-note">ยังไม่มีข้อมูลวันที่อ่านจบ</div>'; return; }
+  el.innerHTML=ys.map(y=>{ const v=S.years[y]; const h=v/max*100;
+    return `<div class="ybar"><div class="col" data-h="${h}"><span>${v}</span></div><div class="yl">${y}</div></div>`; }).join("");
+  requestAnimationFrame(()=>setTimeout(()=>{
+    el.querySelectorAll(".col").forEach(c=>{ c.style.height=(reduceMotion?c.dataset.h:c.dataset.h)+"%"; });
+  },80));
+}
+
+function renderAuthors(){
+  const max=S.topAuthors.length?S.topAuthors[0][1]:1;
+  document.getElementById("authors").innerHTML=S.topAuthors.map(([a,n])=>`
+    <div class="arow"><span class="an" title="${esc(a)}">${esc(a)}</span>
+      <span class="at"><i data-w="${n/max*100}"></i></span><span class="ac">${n}</span></div>`).join("");
+  animateBars("#authors .at > i");
+}
+
+function animateBars(sel){
+  requestAnimationFrame(()=>setTimeout(()=>{
+    document.querySelectorAll(sel).forEach(i=>{ i.style.width=i.dataset.w+"%"; });
+  },60));
+}
+
+/* ---------- explorer ---------- */
+const state={q:"",status:"all",genre:"all",sort:"finished",view:"grid"};
+
+function renderChips(){
+  const chips=document.getElementById("statusChips");
+  let html=`<button class="chip${state.status==='all'?' on':''}" data-s="all">ทั้งหมด <span class="c">${BOOKS.length}</span></button>`;
+  STATUS_ORDER.forEach(s=>{ const v=S.byStatus[s]||0; if(!v)return;
+    html+=`<button class="chip${state.status===s?' on':''}" data-s="${s}"><span class="sd" style="background:${STATUS[s].color}"></span>${STATUS[s].th} <span class="c">${v}</span></button>`; });
+  chips.innerHTML=html;
+}
+function renderGenreOptions(){
+  const genres=[...new Set(BOOKS.map(b=>b.genre).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"th"));
+  const cur=state.genre;
+  document.getElementById("genreSel").innerHTML=
+    `<option value="all">ทุกหมวดหมู่ · All genres</option>`+genres.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("");
+  document.getElementById("genreSel").value=(cur==="all"||genres.includes(cur))?cur:"all";
+  const dl=document.getElementById("genreList");
+  if(dl) dl.innerHTML=genres.map(g=>`<option value="${esc(g)}"></option>`).join("");
+}
+function refresh(){
+  S=computeStats(BOOKS);
+  renderHeroAndKpis(); renderCategoryBars(); renderDonut(); renderRatings();
+  renderYears(); renderAuthors(); renderChips(); renderGenreOptions(); render();
+}
+function buildControls(){
+  renderChips();
+  renderGenreOptions();
+  document.getElementById("statusChips").addEventListener("click",e=>{
+    const c=e.target.closest(".chip"); if(!c)return;
+    state.status=c.dataset.s; renderChips(); render();
+  });
+  document.getElementById("q").addEventListener("input",e=>{state.q=e.target.value.toLowerCase();render();});
+  document.getElementById("genreSel").addEventListener("change",e=>{state.genre=e.target.value;render();});
+  document.getElementById("sortSel").addEventListener("change",e=>{state.sort=e.target.value;render();});
+  document.getElementById("vGrid").addEventListener("click",()=>setView("grid"));
+  document.getElementById("vTable").addEventListener("click",()=>setView("table"));
+}
+function setView(v){ state.view=v;
+  document.getElementById("vGrid").classList.toggle("active",v==="grid");
+  document.getElementById("vTable").classList.toggle("active",v==="table");
+  document.getElementById("vGrid").setAttribute("aria-pressed",v==="grid");
+  document.getElementById("vTable").setAttribute("aria-pressed",v==="table");
+  render();
+}
+
+function currentList(){
+  let list=BOOKS.filter(b=>{
+    if(state.status!=="all" && b.status!==state.status) return false;
+    if(state.genre!=="all" && b.genre!==state.genre) return false;
+    if(state.q){ const h=(b.title+" "+b.author).toLowerCase(); if(!h.includes(state.q)) return false; }
+    return true;
+  });
+  const so=state.sort;
+  list.sort((a,b)=>{
+    if(so==="title") return a.title.localeCompare(b.title,"th");
+    if(so==="author") return (a.author||"~").localeCompare(b.author||"~","th");
+    if(so==="rating") return (b.rating-a.rating) || a.title.localeCompare(b.title,"th");
+    // finished: newly added first, then dated desc, then rating
+    if(a._new&&!b._new) return -1;
+    if(b._new&&!a._new) return 1;
+    const da=parseDate(a.completed), db=parseDate(b.completed);
+    if(da&&db) return db-da;
+    if(da&&!db) return -1;
+    if(!da&&db) return 1;
+    return (b.rating-a.rating) || a.title.localeCompare(b.title,"th");
+  });
+  return list;
+}
+
+function cardHTML(b){
+  const st=STATUS[b.status]||{th:b.status,en:"",cls:"notstart"};
+  const d=parseDate(b.completed);
+  const dateStr = d ? `<span class="date"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>${esc(b.completed)}</span>` : `<span class="date"></span>`;
+  return `<article class="card${b._new?' isnew':''}">
+    <div class="r1"><span class="r1l"><span class="gtag">${esc(b.genre||"—")}</span>${b._new?'<span class="newtag">NEW</span>':''}</span>
+      <span class="pill ${st.cls}"><span class="sd" style="background:${st.color||'var(--notstart)'}"></span>${st.th}</span></div>
+    <div class="title" title="${esc(b.title)}">${esc(b.title)}</div>
+    <div class="auth"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>${esc(b.author||"ไม่ระบุผู้เขียน")}</div>
+    <div class="r3">${starHTML(b.rating)}${dateStr}</div>
+  </article>`;
+}
+
+function rowHTML(b){
+  const st=STATUS[b.status]||{th:b.status,cls:"notstart"};
+  return `<tr>
+    <td class="tt">${esc(b.title)}${b._new?' <span class="newtag">NEW</span>':''}</td>
+    <td class="aa">${esc(b.author||"—")}</td>
+    <td><span class="gtag">${esc(b.genre||"—")}</span></td>
+    <td><span class="pill ${st.cls}"><span class="sd" style="background:${st.color||'var(--notstart)'}"></span>${st.th}</span></td>
+    <td>${starHTML(b.rating)}</td>
+    <td class="mono" style="color:var(--dim);font-size:12px">${esc(b.completed||"—")}</td>
+  </tr>`;
+}
+
+function render(){
+  const list=currentList();
+  const c=document.getElementById("count");
+  c.innerHTML=`แสดง <b>${list.length}</b> จาก ${BOOKS.length} เล่ม`;
+  const res=document.getElementById("results");
+  if(!list.length){ res.innerHTML=`<div class="empty"><div class="big">🔍</div>ไม่พบหนังสือที่ตรงกับเงื่อนไข<br><span style="font-size:12px">No books match your filters</span></div>`; return; }
+  if(state.view==="grid"){
+    res.innerHTML=`<div class="grid">${list.map(cardHTML).join("")}</div>`;
+  }else{
+    res.innerHTML=`<div class="tablewrap"><table>
+      <thead><tr><th>ชื่อหนังสือ · Title</th><th>นักเขียน · Author</th><th>หมวด · Genre</th><th>สถานะ · Status</th><th>คะแนน · Rating</th><th>อ่านจบ · Finished</th></tr></thead>
+      <tbody>${list.map(rowHTML).join("")}</tbody></table></div>`;
+  }
+}
+
+/* ---------- theme ---------- */
+(function initTheme(){
+  const btn=document.getElementById("themeBtn");
+  let saved=null; try{ saved=localStorage.getItem("krida-theme"); }catch(e){}
+  if(saved) document.documentElement.setAttribute("data-theme",saved);
+  function sync(){
+    const explicit=document.documentElement.getAttribute("data-theme");
+    const dark = explicit? explicit==="dark" : matchMedia("(prefers-color-scheme:dark)").matches;
+    document.getElementById("themeIco").textContent = dark? "☀" : "☾";
+    document.getElementById("themeTxt").textContent = dark? "Light" : "Dark";
+  }
+  btn.addEventListener("click",()=>{
+    const cur=document.documentElement.getAttribute("data-theme")
+      || (matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");
+    const next=cur==="dark"?"light":"dark";
+    document.documentElement.setAttribute("data-theme",next);
+    try{ localStorage.setItem("krida-theme",next); }catch(e){}
+    sync();
+  });
+  sync();
+})();
+
+/* ---------- add book (modal + persistence) ---------- */
+function toast(msg){
+  const t=document.getElementById("toast"); if(!t)return;
+  t.innerHTML='<span style="color:var(--done)">✓</span> '+esc(msg);
+  t.classList.add("show"); clearTimeout(toast._t);
+  toast._t=setTimeout(()=>t.classList.remove("show"),2800);
+}
+function initAddBook(){
+  const overlay=document.getElementById("overlay");
+  let rating=0;
+  const g=id=>document.getElementById(id);
+  function paintStars(){ document.querySelectorAll("#starPick .s").forEach(b=>b.classList.toggle("on",+b.dataset.v<=rating)); }
+  function reset(){
+    ["in-title","in-author","in-genre","in-date"].forEach(id=>g(id).value="");
+    g("in-status").value="Done"; rating=0; paintStars();
+    g("f-title").classList.remove("invalid");
+  }
+  function open(){ overlay.classList.add("open"); document.body.style.overflow="hidden"; setTimeout(()=>g("in-title").focus(),40); }
+  function close(){ overlay.classList.remove("open"); document.body.style.overflow=""; reset(); }
+  function fmtDate(v){ if(!v)return""; const p=v.split("-"); if(p.length!==3)return""; return (+p[2])+"/"+(+p[1])+"/"+p[0]; }
+  function save(){
+    const title=g("in-title").value.trim();
+    if(!title){ g("f-title").classList.add("invalid"); g("in-title").focus(); return; }
+    const book={
+      title, author:g("in-author").value.trim(),
+      genre:g("in-genre").value.trim()||"—",
+      status:g("in-status").value,
+      completed:fmtDate(g("in-date").value),
+      rating:rating, _new:true
+    };
+    BOOKS.push(book); addedBooks.push(book); saveAdded(addedBooks);
+    ANIM=false;
+    state.status="all"; state.genre="all"; state.q=""; state.sort="finished";
+    g("q").value=""; g("sortSel").value="finished";
+    refresh();
+    close();
+    document.getElementById("explorer").scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"start"});
+    toast('เพิ่ม "'+title+'" ลงคลังแล้ว · Book added');
+  }
+  document.querySelectorAll("#starPick .s").forEach(b=>b.addEventListener("click",()=>{ rating=+b.dataset.v; paintStars(); }));
+  g("starClr").addEventListener("click",()=>{ rating=0; paintStars(); });
+  g("addBtn").addEventListener("click",open);
+  g("addBtn2").addEventListener("click",open);
+  g("modalClose").addEventListener("click",close);
+  g("cancelBtn").addEventListener("click",close);
+  g("saveBtn").addEventListener("click",save);
+  g("in-title").addEventListener("input",()=>g("f-title").classList.remove("invalid"));
+  overlay.addEventListener("click",e=>{ if(e.target===overlay) close(); });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&overlay.classList.contains("open")) close(); });
+  g("addForm").addEventListener("submit",e=>{ e.preventDefault(); save(); });
+  reset();
+}
+
+/* ---------- boot ---------- */
+renderHeroAndKpis();
+renderCategoryBars();
+renderDonut();
+renderRatings();
+renderYears();
+renderAuthors();
+buildControls();
+render();
+initAddBook();
+ANIM=false;
+</script>
+</body>
+</html>
