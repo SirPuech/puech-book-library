@@ -15,10 +15,10 @@
  *  4) Embed the /exec URL in your site with <iframe> (XFrameOptions is ALLOWALL).
  */
 
-// Paste your spreadsheet ID here, or leave "" if this script is bound to the sheet:
-const SHEET_ID   = "";
+// Spreadsheet ID (from the sheet URL). Leave "" only if this script is BOUND to the sheet.
+const SHEET_ID   = "1PeDV5lKVAk06DlK-kNO9gqVSkC7y43VO7So64JKOPxs";
 const SHEET_NAME = "";            // "" = auto-detect the book-list tab; or set the exact tab name
-const SHEET_GID  = 0;             // optional: the tab's gid from the sheet URL (#gid=…). 0 = ignore/auto
+const SHEET_GID  = 1650210824;    // the book-list tab's gid (from the sheet URL #gid=…); 0 = auto-detect
 const TZ         = "Asia/Bangkok";
 
 // Sheet status text  ->  dashboard status
@@ -130,7 +130,12 @@ function updateBook(p) {
 
 /* ---------------- helpers ---------------- */
 
-function ss_()    { return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
+function ss_() {
+  if (SHEET_ID) return SpreadsheetApp.openById(SHEET_ID);
+  const a = SpreadsheetApp.getActiveSpreadsheet();
+  if (!a) throw new Error("No spreadsheet found — set SHEET_ID at the top of Code.gs (a standalone project can't use getActiveSpreadsheet).");
+  return a;
+}
 
 /* Resolve the book-list tab robustly:
    1) SHEET_NAME if given  2) SHEET_GID if given  3) auto-detect by header row  4) tab with most rows */
@@ -172,4 +177,21 @@ function stars_(v) {
 function fmtDate_(v) {
   if (v instanceof Date) return Utilities.formatDate(v, TZ, "d/M/yyyy");
   return str_(v);
+}
+
+/* ---------------- diagnostics ----------------
+   Select "debugSheets" in the toolbar dropdown, click Run, then open Execution log. */
+function debugSheets() {
+  const ss = ss_();
+  const sheets = ss.getSheets();
+  Logger.log("Spreadsheet: '" + ss.getName() + "'  (" + sheets.length + " tab(s))");
+  sheets.forEach(function (s, i) {
+    var w = Math.max(1, Math.min(8, s.getLastColumn()));
+    var hdr = s.getRange(1, 1, 1, w).getValues()[0].join(" | ");
+    Logger.log("[" + i + "] name='" + s.getName() + "' gid=" + s.getSheetId() +
+               " rows=" + s.getLastRow() + " cols=" + s.getLastColumn() + "  row1: " + hdr);
+  });
+  var picked = sheet_();
+  Logger.log("sheet_() -> name='" + picked.getName() + "' gid=" + picked.getSheetId());
+  Logger.log("getBookData() returned " + getBookData().length + " books");
 }
