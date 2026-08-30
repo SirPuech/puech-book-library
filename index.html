@@ -314,6 +314,15 @@ footer{border-top:1px solid var(--border);padding:30px 0 44px;margin-top:20px}
   box-shadow:0 10px 24px -12px var(--blue-glow);transition:transform .12s,filter .2s;white-space:nowrap}
 .addbtn:hover{filter:brightness(1.07)} .addbtn:active{transform:translateY(1px)}
 .addbtn .plus{font-size:18px;line-height:1}
+.r1r{display:flex;gap:8px;align-items:center;flex:0 0 auto}
+.editbtn{background:var(--surface);border:1px solid var(--border-strong);color:var(--muted);width:27px;height:27px;
+  border-radius:8px;cursor:pointer;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;
+  transition:.15s;flex:0 0 auto;padding:0}
+.editbtn:hover{color:var(--text);border-color:var(--blue-lite);background:var(--card-hover)}
+td .editbtn{width:24px;height:24px;font-size:12px;margin-left:8px;vertical-align:middle}
+.btn-danger{display:none;margin-right:auto;height:44px;padding:0 16px;border-radius:10px;
+  border:1px solid rgba(248,113,113,.42);background:transparent;color:#f87171;font-family:inherit;font-size:14px;cursor:pointer}
+.btn-danger:hover{background:rgba(248,113,113,.12)}
 
 /* new-book marker */
 .r1l{display:flex;gap:6px;align-items:center;min-width:0}
@@ -493,7 +502,7 @@ footer{border-top:1px solid var(--border);padding:30px 0 44px;margin-top:20px}
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <div class="mh">
-      <div><h3 id="modalTitle">เพิ่มหนังสือใหม่</h3><div class="en">ADD A NEW BOOK</div></div>
+      <div><h3 id="modalTitle">เพิ่มหนังสือใหม่</h3><div class="en" id="modalSub">ADD A NEW BOOK</div></div>
       <button class="x" id="modalClose" type="button" aria-label="ปิด">×</button>
     </div>
     <form class="mform" id="addForm" novalidate>
@@ -537,6 +546,7 @@ footer{border-top:1px solid var(--border);padding:30px 0 44px;margin-top:20px}
       </div>
     </form>
     <div class="mfoot">
+      <button class="btn-danger" id="delBtn" type="button">ลบหนังสือ</button>
       <button class="btn-ghost" id="cancelBtn" type="button">ยกเลิก</button>
       <button class="btn-primary" id="saveBtn" type="button">บันทึกหนังสือ</button>
     </div>
@@ -551,8 +561,11 @@ const BOOKS = [{"title":"หิมาลัยไม่มีจริง","stat
 const ADDED_KEY = "krida-puech-books-added";
 function loadAdded(){ try{ return JSON.parse(localStorage.getItem(ADDED_KEY))||[]; }catch(e){ return []; } }
 function saveAdded(arr){ try{ localStorage.setItem(ADDED_KEY, JSON.stringify(arr)); }catch(e){} }
+function newId(){ return "u"+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 let addedBooks = loadAdded();
-addedBooks.forEach(b=>{ b._new=true; BOOKS.push(b); });
+let _idBackfilled=false;
+addedBooks.forEach(b=>{ b._new=true; if(!b._id){ b._id=newId(); _idBackfilled=true; } BOOKS.push(b); });
+if(_idBackfilled) saveAdded(addedBooks);
 
 const STATUS = {
   "Done":       {th:"อ่านจบแล้ว", en:"Done",        cls:"done",     color:"var(--done)"},
@@ -785,7 +798,7 @@ function cardHTML(b){
   const dateStr = d ? `<span class="date"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>${esc(b.completed)}</span>` : `<span class="date"></span>`;
   return `<article class="card${b._new?' isnew':''}">
     <div class="r1"><span class="r1l"><span class="gtag">${esc(b.genre||"—")}</span>${b._new?'<span class="newtag">NEW</span>':''}</span>
-      <span class="pill ${st.cls}"><span class="sd" style="background:${st.color||'var(--notstart)'}"></span>${st.th}</span></div>
+      <span class="r1r"><span class="pill ${st.cls}"><span class="sd" style="background:${st.color||'var(--notstart)'}"></span>${st.th}</span>${b._new?`<button class="editbtn" data-edit="${b._id}" title="แก้ไข / Edit" aria-label="แก้ไข">✎</button>`:''}</span></div>
     <div class="title" title="${esc(b.title)}">${esc(b.title)}</div>
     <div class="auth"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>${esc(b.author||"ไม่ระบุผู้เขียน")}</div>
     <div class="r3">${starHTML(b.rating)}${dateStr}</div>
@@ -795,7 +808,7 @@ function cardHTML(b){
 function rowHTML(b){
   const st=STATUS[b.status]||{th:b.status,cls:"notstart"};
   return `<tr>
-    <td class="tt">${esc(b.title)}${b._new?' <span class="newtag">NEW</span>':''}</td>
+    <td class="tt">${esc(b.title)}${b._new?' <span class="newtag">NEW</span>':''}${b._new?`<button class="editbtn" data-edit="${b._id}" title="แก้ไข / Edit" aria-label="แก้ไข">✎</button>`:''}</td>
     <td class="aa">${esc(b.author||"—")}</td>
     <td><span class="gtag">${esc(b.genre||"—")}</span></td>
     <td><span class="pill ${st.cls}"><span class="sd" style="background:${st.color||'var(--notstart)'}"></span>${st.th}</span></td>
@@ -850,7 +863,7 @@ function toast(msg){
 }
 function initAddBook(){
   const overlay=document.getElementById("overlay");
-  let rating=0;
+  let rating=0, editingId=null;
   const g=id=>document.getElementById(id);
   function paintStars(){ document.querySelectorAll("#starPick .s").forEach(b=>b.classList.toggle("on",+b.dataset.v<=rating)); }
   function reset(){
@@ -858,40 +871,80 @@ function initAddBook(){
     g("in-status").value="Done"; rating=0; paintStars();
     g("f-title").classList.remove("invalid");
   }
+  function setMode(edit){
+    g("modalTitle").textContent = edit?"แก้ไขหนังสือ":"เพิ่มหนังสือใหม่";
+    g("modalSub").textContent   = edit?"EDIT BOOK":"ADD A NEW BOOK";
+    g("saveBtn").textContent    = edit?"บันทึกการแก้ไข":"บันทึกหนังสือ";
+    g("delBtn").style.display   = edit?"inline-flex":"none";
+  }
   function open(){ overlay.classList.add("open"); document.body.style.overflow="hidden"; setTimeout(()=>g("in-title").focus(),40); }
-  function close(){ overlay.classList.remove("open"); document.body.style.overflow=""; reset(); }
+  function close(){ overlay.classList.remove("open"); document.body.style.overflow=""; editingId=null; reset(); }
   function fmtDate(v){ if(!v)return""; const p=v.split("-"); if(p.length!==3)return""; return (+p[2])+"/"+(+p[1])+"/"+p[0]; }
+  function toInputDate(s){ if(!s)return""; const p=String(s).split("/"); if(p.length!==3)return"";
+    return p[2]+"-"+("0"+p[1]).slice(-2)+"-"+("0"+p[0]).slice(-2); }
+  function readForm(){
+    return { title:g("in-title").value.trim(), author:g("in-author").value.trim(),
+      genre:g("in-genre").value.trim()||"—", status:g("in-status").value,
+      completed:fmtDate(g("in-date").value), rating:rating };
+  }
+  function openAdd(){ editingId=null; reset(); setMode(false); open(); }
+  function openEdit(id){
+    const b=BOOKS.find(x=>x._id===id); if(!b) return;
+    editingId=id;
+    g("in-title").value=b.title||""; g("in-author").value=b.author||"";
+    g("in-genre").value=(b.genre&&b.genre!=="—")?b.genre:"";
+    g("in-status").value=b.status||"Done";
+    g("in-date").value=toInputDate(b.completed);
+    rating=b.rating||0; paintStars();
+    g("f-title").classList.remove("invalid");
+    setMode(true); open();
+  }
   function save(){
-    const title=g("in-title").value.trim();
-    if(!title){ g("f-title").classList.add("invalid"); g("in-title").focus(); return; }
-    const book={
-      title, author:g("in-author").value.trim(),
-      genre:g("in-genre").value.trim()||"—",
-      status:g("in-status").value,
-      completed:fmtDate(g("in-date").value),
-      rating:rating, _new:true
-    };
-    BOOKS.push(book); addedBooks.push(book); saveAdded(addedBooks);
+    const data=readForm();
+    if(!data.title){ g("f-title").classList.add("invalid"); g("in-title").focus(); return; }
     ANIM=false;
-    state.status="all"; state.genre="all"; state.q=""; state.sort="finished";
-    g("q").value=""; g("sortSel").value="finished";
-    refresh();
-    close();
-    document.getElementById("explorer").scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"start"});
-    toast('เพิ่ม "'+title+'" ลงคลังแล้ว · Book added');
+    if(editingId){
+      const b=BOOKS.find(x=>x._id===editingId); if(b) Object.assign(b,data);
+      const ab=addedBooks.find(x=>x._id===editingId); if(ab) Object.assign(ab,data);
+      saveAdded(addedBooks);
+      refresh(); close();
+      toast('อัปเดต "'+data.title+'" แล้ว · Updated');
+    }else{
+      const book=Object.assign({_new:true,_id:newId()},data);
+      BOOKS.push(book); addedBooks.push(book); saveAdded(addedBooks);
+      state.status="all"; state.genre="all"; state.q=""; state.sort="finished";
+      g("q").value=""; g("sortSel").value="finished";
+      refresh(); close();
+      document.getElementById("explorer").scrollIntoView({behavior:reduceMotion?"auto":"smooth",block:"start"});
+      toast('เพิ่ม "'+data.title+'" ลงคลังแล้ว · Book added');
+    }
+  }
+  function del(){
+    if(!editingId) return;
+    const b=BOOKS.find(x=>x._id===editingId); const name=b?b.title:"";
+    if(!confirm('ลบ "'+name+'" ออกจากคลัง?\nRemove this book?')) return;
+    const i=BOOKS.findIndex(x=>x._id===editingId); if(i>=0) BOOKS.splice(i,1);
+    const j=addedBooks.findIndex(x=>x._id===editingId); if(j>=0) addedBooks.splice(j,1);
+    saveAdded(addedBooks); ANIM=false; refresh(); close();
+    toast('ลบ "'+name+'" แล้ว · Removed');
   }
   document.querySelectorAll("#starPick .s").forEach(b=>b.addEventListener("click",()=>{ rating=+b.dataset.v; paintStars(); }));
   g("starClr").addEventListener("click",()=>{ rating=0; paintStars(); });
-  g("addBtn").addEventListener("click",open);
-  g("addBtn2").addEventListener("click",open);
+  g("addBtn").addEventListener("click",openAdd);
+  g("addBtn2").addEventListener("click",openAdd);
   g("modalClose").addEventListener("click",close);
   g("cancelBtn").addEventListener("click",close);
   g("saveBtn").addEventListener("click",save);
+  g("delBtn").addEventListener("click",del);
   g("in-title").addEventListener("input",()=>g("f-title").classList.remove("invalid"));
   overlay.addEventListener("click",e=>{ if(e.target===overlay) close(); });
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&overlay.classList.contains("open")) close(); });
   g("addForm").addEventListener("submit",e=>{ e.preventDefault(); save(); });
-  reset();
+  document.getElementById("results").addEventListener("click",e=>{
+    const btn=e.target.closest(".editbtn"); if(!btn) return;
+    e.preventDefault(); e.stopPropagation(); openEdit(btn.dataset.edit);
+  });
+  setMode(false); reset();
 }
 
 /* ---------- boot ---------- */
