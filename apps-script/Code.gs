@@ -18,7 +18,7 @@
 // Spreadsheet ID (from the sheet URL). Leave "" only if this script is BOUND to the sheet.
 const SHEET_ID   = "1PeDV5lKVAk06DlK-kNO9gqVSkC7y43VO7So64JKOPxs";
 const SHEET_NAME = "";            // "" = auto-detect the book-list tab; or set the exact tab name
-const SHEET_GID  = 1650210824;    // the book-list tab's gid (from the sheet URL #gid=…); 0 = auto-detect
+const SHEET_GID  = 0;             // optional override only; header detection is tried first anyway
 const TZ         = "Asia/Bangkok";
 
 // Sheet status text  ->  dashboard status
@@ -137,31 +137,27 @@ function ss_() {
   return a;
 }
 
-/* Resolve the book-list tab robustly:
-   1) SHEET_NAME if given  2) SHEET_GID if given  3) auto-detect by header row  4) tab with most rows */
+/* Resolve the book-list tab. Header detection comes FIRST so a stray gid/name
+   can never lock onto the wrong (empty) tab.
+   1) the tab whose header row looks like the book list  2) SHEET_NAME  3) SHEET_GID  4) most rows */
 function sheet_() {
   const ss = ss_();
-  if (SHEET_NAME) { const s = ss.getSheetByName(SHEET_NAME); if (s) return s; }
   const sheets = ss.getSheets();
-  if (SHEET_GID) {
-    for (var k = 0; k < sheets.length; k++) { if (sheets[k].getSheetId() === SHEET_GID) return sheets[k]; }
-  }
-  // auto-detect: the tab whose header row (row 1) looks like the book list
-  for (var i = 0; i < sheets.length; i++) {
-    var s = sheets[i];
-    if (s.getLastRow() < 1 || s.getLastColumn() < 1) continue;
-    var w = Math.min(8, s.getLastColumn());
-    var hdr = s.getRange(1, 1, 1, w).getValues()[0]
-                .map(function (x) { return String(x).trim().toLowerCase(); }).join("|");
-    if (hdr.indexOf("status") >= 0 &&
-        (hdr.indexOf("ชื่อหนังสือ") >= 0 || hdr.indexOf("genre") >= 0 || hdr.indexOf("นักเขียน") >= 0)) {
-      return s;
-    }
-  }
-  // fallback: the tab with the most rows
+  for (var i = 0; i < sheets.length; i++) { if (looksLikeBooks_(sheets[i])) return sheets[i]; }
+  if (SHEET_NAME) { var s = ss.getSheetByName(SHEET_NAME); if (s) return s; }
+  if (SHEET_GID)  { for (var k = 0; k < sheets.length; k++) { if (sheets[k].getSheetId() === SHEET_GID) return sheets[k]; } }
   var best = sheets[0], bestN = -1;
   for (var j = 0; j < sheets.length; j++) { var n = sheets[j].getLastRow(); if (n > bestN) { bestN = n; best = sheets[j]; } }
   return best;
+}
+function looksLikeBooks_(s) {
+  if (s.getLastRow() < 2 || s.getLastColumn() < 2) return false;
+  var w = Math.min(8, s.getLastColumn());
+  var hdr = s.getRange(1, 1, 1, w).getValues()[0]
+              .map(function (x) { return String(x).trim().toLowerCase(); }).join("|");
+  return hdr.indexOf("status") >= 0 &&
+         (hdr.indexOf("ชื่อหนังสือ") >= 0 || hdr.indexOf("genre") >= 0 ||
+          hdr.indexOf("นักเขียน") >= 0 || hdr.indexOf("title") >= 0);
 }
 function str_(v)  { return v == null ? "" : String(v).trim(); }
 function cleanGenre_(g) { g = String(g == null ? "" : g).trim(); return g === "—" ? "" : g; }
