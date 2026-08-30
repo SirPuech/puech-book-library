@@ -60,6 +60,7 @@ function getBookData() {
     if (!title) continue;                       // skip blank rows
     const statusRaw = str_(r[1]);
     out.push({
+      row:       i + 2,   // actual spreadsheet row — used to edit this book in place
       title:     title,
       status:    STATUS_MAP[statusRaw.toLowerCase()] || statusRaw,
       genre:     str_(r[2]),
@@ -86,11 +87,40 @@ function addBook(book) {
     sh.appendRow([
       String(book.title).trim(),
       status,
-      String(book.genre || "").trim(),
+      cleanGenre_(book.genre),
       String(book.author || "").trim(),
       String(book.completed || "").trim(),
       stars
     ]);
+    return true;
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* ---------------- write (Update book) ---------------- */
+
+function updateBook(p) {
+  if (!p || !p.row) throw new Error("Missing row");
+  const row = parseInt(p.row, 10);
+  if (!(row >= 2)) throw new Error("Bad row: " + p.row);
+  if (!String(p.title || "").trim()) throw new Error("กรุณากรอกชื่อหนังสือ");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(15000);
+  try {
+    const sh = sheet_();
+    const status = STATUS_TO_SHEET[p.status] || p.status || "Wishes";
+    const n = Math.max(0, Math.min(5, parseInt(p.rating, 10) || 0));
+    const stars = n ? new Array(n + 1).join("⭐") : "";
+    // Overwrite ONLY columns A–F of this row; the stat block in H–N is left untouched.
+    sh.getRange(row, 1, 1, 6).setValues([[
+      String(p.title).trim(),
+      status,
+      cleanGenre_(p.genre),
+      String(p.author || "").trim(),
+      String(p.completed || "").trim(),
+      stars
+    ]]);
     return true;
   } finally {
     lock.releaseLock();
@@ -102,6 +132,7 @@ function addBook(book) {
 function ss_()    { return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
 function sheet_() { const ss = ss_(); return SHEET_NAME ? ss.getSheetByName(SHEET_NAME) : ss.getSheets()[0]; }
 function str_(v)  { return v == null ? "" : String(v).trim(); }
+function cleanGenre_(g) { g = String(g == null ? "" : g).trim(); return g === "—" ? "" : g; }
 
 function stars_(v) {
   if (v == null) return 0;

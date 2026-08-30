@@ -134,7 +134,7 @@
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <div class="mh">
-      <div><h3 id="modalTitle">เพิ่มหนังสือใหม่</h3><div class="en">ADD A NEW BOOK</div></div>
+      <div><h3 id="modalTitle">เพิ่มหนังสือใหม่</h3><div class="en" id="modalSub">ADD A NEW BOOK</div></div>
       <button class="x" id="modalClose" type="button" aria-label="ปิด">×</button>
     </div>
     <form class="mform" id="addForm" novalidate>
@@ -178,6 +178,7 @@
       </div>
     </form>
     <div class="mfoot">
+      <button class="btn-danger" id="delBtn" type="button">ลบหนังสือ</button>
       <button class="btn-ghost" id="cancelBtn" type="button">ยกเลิก</button>
       <button class="btn-primary" id="saveBtn" type="button">บันทึกหนังสือ</button>
     </div>
