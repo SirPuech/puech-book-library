@@ -448,14 +448,33 @@ function initAddBook(){
 }
 
 /* ---------- boot ---------- */
-renderHeroAndKpis();
-renderCategoryBars();
-renderDonut();
-renderRatings();
-renderYears();
-renderAuthors();
-buildControls();
-render();
-initAddBook();
-ANIM=false;
+function boot(){
+  renderHeroAndKpis();
+  renderCategoryBars();
+  renderDonut();
+  renderRatings();
+  renderYears();
+  renderAuthors();
+  buildControls();
+  render();
+  initAddBook();
+  ANIM=false;
+}
+boot();
+
+/* In the Apps Script build, always pull fresh data straight from the sheet via
+   google.script.run — this does not depend on any template injection in Index.html. */
+if (IS_GAS){
+  var _cnt=document.getElementById("count"); if(_cnt) _cnt.innerHTML="กำลังโหลดจากชีต… · Loading from sheet…";
+  google.script.run
+    .withSuccessHandler(function(bs){
+      BOOKS.length=0; (bs||[]).forEach(function(b){ BOOKS.push(b); });
+      ANIM=false; refresh();
+    })
+    .withFailureHandler(function(err){
+      var c=document.getElementById("count");
+      if(c) c.innerHTML='<b style="color:#f87171">โหลดข้อมูลไม่สำเร็จ · Failed to load:</b> '+esc((err&&err.message)||'error');
+    })
+    .getBookData();
+}
 </script>
