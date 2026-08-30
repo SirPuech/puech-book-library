@@ -17,7 +17,8 @@
 
 // Paste your spreadsheet ID here, or leave "" if this script is bound to the sheet:
 const SHEET_ID   = "";
-const SHEET_NAME = "";            // "" = first tab, or the exact tab name
+const SHEET_NAME = "";            // "" = auto-detect the book-list tab; or set the exact tab name
+const SHEET_GID  = 0;             // optional: the tab's gid from the sheet URL (#gid=…). 0 = ignore/auto
 const TZ         = "Asia/Bangkok";
 
 // Sheet status text  ->  dashboard status
@@ -130,7 +131,33 @@ function updateBook(p) {
 /* ---------------- helpers ---------------- */
 
 function ss_()    { return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
-function sheet_() { const ss = ss_(); return SHEET_NAME ? ss.getSheetByName(SHEET_NAME) : ss.getSheets()[0]; }
+
+/* Resolve the book-list tab robustly:
+   1) SHEET_NAME if given  2) SHEET_GID if given  3) auto-detect by header row  4) tab with most rows */
+function sheet_() {
+  const ss = ss_();
+  if (SHEET_NAME) { const s = ss.getSheetByName(SHEET_NAME); if (s) return s; }
+  const sheets = ss.getSheets();
+  if (SHEET_GID) {
+    for (var k = 0; k < sheets.length; k++) { if (sheets[k].getSheetId() === SHEET_GID) return sheets[k]; }
+  }
+  // auto-detect: the tab whose header row (row 1) looks like the book list
+  for (var i = 0; i < sheets.length; i++) {
+    var s = sheets[i];
+    if (s.getLastRow() < 1 || s.getLastColumn() < 1) continue;
+    var w = Math.min(8, s.getLastColumn());
+    var hdr = s.getRange(1, 1, 1, w).getValues()[0]
+                .map(function (x) { return String(x).trim().toLowerCase(); }).join("|");
+    if (hdr.indexOf("status") >= 0 &&
+        (hdr.indexOf("ชื่อหนังสือ") >= 0 || hdr.indexOf("genre") >= 0 || hdr.indexOf("นักเขียน") >= 0)) {
+      return s;
+    }
+  }
+  // fallback: the tab with the most rows
+  var best = sheets[0], bestN = -1;
+  for (var j = 0; j < sheets.length; j++) { var n = sheets[j].getLastRow(); if (n > bestN) { bestN = n; best = sheets[j]; } }
+  return best;
+}
 function str_(v)  { return v == null ? "" : String(v).trim(); }
 function cleanGenre_(g) { g = String(g == null ? "" : g).trim(); return g === "—" ? "" : g; }
 
