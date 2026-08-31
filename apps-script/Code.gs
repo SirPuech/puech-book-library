@@ -34,12 +34,38 @@ const STATUS_TO_SHEET = {
 
 /* ---------------- web app ---------------- */
 
+/**
+ * Serve a TINY shell page. HtmlService's chunked page-writer chokes on the full
+ * ~60KB page ("Unexpected token 'class'"), so instead we serve ~500 bytes here,
+ * then the shell pulls the real page as a string over google.script.run (a clean
+ * data channel, no HTML chunk-writer) and document.write()s it on the client.
+ */
 function doGet() {
-  const t = HtmlService.createTemplateFromFile("Index");
-  return t.evaluate()
+  var shell =
+    '<!DOCTYPE html><html><head>' +
+    '<meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+    '<base target="_top">' +
+    '<title>PUECH Book Library</title>' +
+    '<style>html,body{margin:0;background:#0B1120;color:#9fb0cc;font-family:sans-serif}</style>' +
+    '</head><body>' +
+    '<div id="_l" style="padding:44px;font-size:14px">กำลังโหลด… · Loading…</div>' +
+    '<script>' +
+    'google.script.run' +
+    '.withSuccessHandler(function(h){document.open();document.write(h);document.close();})' +
+    '.withFailureHandler(function(e){document.getElementById("_l").textContent="Load error: "+((e&&e.message)||e);})' +
+    '.getAppHtml();' +
+    '<\/script>' +
+    '</body></html>';
+  return HtmlService.createHtmlOutput(shell)
     .setTitle("PUECH Book Library")
     .addMetaTag("viewport", "width=device-width, initial-scale=1")
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+/** Returns the full app page (Index.html) as a raw string for the shell to write. */
+function getAppHtml() {
+  return HtmlService.createTemplateFromFile("Index").getRawContent();
 }
 
 function include(name) {
