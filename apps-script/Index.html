@@ -554,7 +554,7 @@ td .editbtn{width:24px;height:24px;font-size:12px;margin-left:8px;vertical-align
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>window.__BOOKS_B64__ = "<?= dataB64 ?>";</script>
+<script>window.__BOOKS_B64__ = "<?!= dataB64 ?>";</script>
 <script>
 /* ===== data source mode =====
    "static" (this file): 195-book snapshot embedded + per-browser adds/edits in localStorage.
@@ -574,15 +574,17 @@ function decodeB64Json(b64){
   return JSON.parse(new TextDecoder("utf-8").decode(bytes));
 }
 
+var GAS_DIAG = {};
 const BOOKS = [];
 let addedBooks = [];
 function loadData(){
   BOOKS.length = 0;
   if (IS_GAS){
+    var _raw = (typeof window!=="undefined" && window.__BOOKS_B64__) ? window.__BOOKS_B64__ : "";
+    GAS_DIAG.hasVar = !!_raw; GAS_DIAG.rawLen = _raw ? _raw.length : 0;
     try{
-      var _raw = (typeof window!=="undefined" && window.__BOOKS_B64__) ? window.__BOOKS_B64__ : "";
-      if(_raw){ decodeB64Json(_raw).forEach(function(b){ BOOKS.push(b); }); }   // each carries a sheet .row
-    }catch(_e){ /* boot() will fall back to a direct google.script.run fetch */ }
+      if(_raw){ var _arr=decodeB64Json(_raw); _arr.forEach(function(b){ BOOKS.push(b); }); GAS_DIAG.decoded=_arr.length; }
+    }catch(_e){ GAS_DIAG.decodeErr = (_e&&_e.message)||String(_e); }
   } else {
     EMBED.forEach(b=>BOOKS.push(b));
     addedBooks = loadAdded();
@@ -1012,6 +1014,21 @@ function initAddBook(){
   setMode(false); reset();
 }
 
+/* on-page diagnostic for the Apps Script build (so no browser console is needed) */
+function showGasDiag(extra){
+  var r=document.getElementById("results"); if(!r) return;
+  r.innerHTML='<div class="empty" style="text-align:left;max-width:640px;margin:0 auto">'
+    +'<div class="big">⚠️</div>'
+    +'<div style="font-family:monospace;font-size:12.5px;line-height:2;color:var(--muted)">'
+    +'IS_GAS: <b>'+IS_GAS+'</b><br>'
+    +'window.__BOOKS_B64__ present: <b>'+(GAS_DIAG.hasVar?'yes':'no')+'</b><br>'
+    +'base64 length: <b>'+(GAS_DIAG.rawLen||0)+'</b><br>'
+    +'decoded books: <b>'+(GAS_DIAG.decoded||0)+'</b><br>'
+    +'decode error: <b style="color:#f87171">'+esc(GAS_DIAG.decodeErr||'none')+'</b><br>'
+    +(extra||'')
+    +'</div></div>';
+}
+
 /* ---------- boot ---------- */
 function boot(){
   renderHeroAndKpis();
@@ -1030,15 +1047,14 @@ boot();
 /* Apps Script: books are injected as base64 at load (see Index.html). If that ever
    comes through empty, fall back to a direct google.script.run fetch. */
 if (IS_GAS && BOOKS.length === 0){
-  var _cnt=document.getElementById("count"); if(_cnt) _cnt.innerHTML="กำลังโหลดจากชีต… · Loading…";
+  showGasDiag('<span style="color:var(--dim)">…trying direct google.script.run fetch…</span>');
   google.script.run
     .withSuccessHandler(function(bs){
       BOOKS.length=0; (bs||[]).forEach(function(b){ BOOKS.push(b); });
       ANIM=false; refresh();
     })
     .withFailureHandler(function(err){
-      var c=document.getElementById("count");
-      if(c) c.innerHTML='<b style="color:#f87171">โหลดข้อมูลไม่สำเร็จ · Failed to load:</b> '+esc((err&&err.message)||'error');
+      showGasDiag('google.script.run.getBookData() error: <b style="color:#f87171">'+esc((err&&err.message)||'error')+'</b>');
     })
     .getBookData();
 }
