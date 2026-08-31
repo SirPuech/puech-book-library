@@ -567,13 +567,21 @@ const ADDED_KEY = "krida-puech-books-added";
 function loadAdded(){ try{ return JSON.parse(localStorage.getItem(ADDED_KEY))||[]; }catch(e){ return []; } }
 function saveAdded(arr){ try{ localStorage.setItem(ADDED_KEY, JSON.stringify(arr)); }catch(e){} }
 function newId(){ return "u"+Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function decodeB64Json(b64){
+  var bin=atob(b64), bytes=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  return JSON.parse(new TextDecoder("utf-8").decode(bytes));
+}
 
 const BOOKS = [];
 let addedBooks = [];
 function loadData(){
   BOOKS.length = 0;
   if (IS_GAS){
-    (window.__BOOKS__ || []).forEach(b=>BOOKS.push(b));   // each carries a sheet .row
+    try{
+      var _raw = (typeof window!=="undefined" && window.__BOOKS_B64__) ? window.__BOOKS_B64__ : "";
+      if(_raw){ decodeB64Json(_raw).forEach(function(b){ BOOKS.push(b); }); }   // each carries a sheet .row
+    }catch(_e){ /* boot() will fall back to a direct google.script.run fetch */ }
   } else {
     EMBED.forEach(b=>BOOKS.push(b));
     addedBooks = loadAdded();
@@ -1018,10 +1026,10 @@ function boot(){
 }
 boot();
 
-/* In the Apps Script build, always pull fresh data straight from the sheet via
-   google.script.run — this does not depend on any template injection in Index.html. */
-if (IS_GAS){
-  var _cnt=document.getElementById("count"); if(_cnt) _cnt.innerHTML="กำลังโหลดจากชีต… · Loading from sheet…";
+/* Apps Script: books are injected as base64 at load (see Index.html). If that ever
+   comes through empty, fall back to a direct google.script.run fetch. */
+if (IS_GAS && BOOKS.length === 0){
+  var _cnt=document.getElementById("count"); if(_cnt) _cnt.innerHTML="กำลังโหลดจากชีต… · Loading…";
   google.script.run
     .withSuccessHandler(function(bs){
       BOOKS.length=0; (bs||[]).forEach(function(b){ BOOKS.push(b); });
