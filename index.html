@@ -588,11 +588,9 @@ let addedBooks = [];
 function loadData(){
   BOOKS.length = 0;
   if (IS_GAS){
-    var _raw = (typeof window!=="undefined" && window.__BOOKS_B64__) ? window.__BOOKS_B64__ : "";
-    GAS_DIAG.hasVar = !!_raw; GAS_DIAG.rawLen = _raw ? _raw.length : 0;
-    try{
-      if(_raw){ var _arr=decodeB64Json(_raw); _arr.forEach(function(b){ BOOKS.push(b); }); GAS_DIAG.decoded=_arr.length; }
-    }catch(_e){ GAS_DIAG.decodeErr = (_e&&_e.message)||String(_e); }
+    /* data is fetched from the sheet in boot() via google.script.run — keeps the
+       served page small so HtmlService's chunked writer can't break a token */
+    GAS_DIAG.source = "google.script.run";
   } else {
     EMBED.forEach(b=>BOOKS.push(b));
     addedBooks = loadAdded();
@@ -1056,11 +1054,12 @@ boot();
 
 /* Apps Script: books are injected as base64 at load (see Index.html). If that ever
    comes through empty, fall back to a direct google.script.run fetch. */
-if (IS_GAS && BOOKS.length === 0){
-  showGasDiag('<span style="color:var(--dim)">…trying direct google.script.run fetch…</span>');
+if (IS_GAS){
+  var _c=document.getElementById("count"); if(_c) _c.textContent="กำลังโหลดจากชีต… · Loading from sheet…";
   google.script.run
     .withSuccessHandler(function(bs){
       BOOKS.length=0; (bs||[]).forEach(function(b){ BOOKS.push(b); });
+      var db=document.getElementById("__diagbar"); if(db) db.remove();
       ANIM=false; refresh();
     })
     .withFailureHandler(function(err){

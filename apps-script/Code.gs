@@ -36,7 +36,6 @@ const STATUS_TO_SHEET = {
 
 function doGet() {
   const t = HtmlService.createTemplateFromFile("Index");
-  t.dataB64 = Utilities.base64Encode(JSON.stringify(getBookData()), Utilities.Charset.UTF_8);
   return t.evaluate()
     .setTitle("PUECH Book Library")
     .addMetaTag("viewport", "width=device-width, initial-scale=1")
