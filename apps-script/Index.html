@@ -560,6 +560,15 @@ td .editbtn{width:24px;height:24px;font-size:12px;margin-left:8px;vertical-align
    "static" (this file): 195-book snapshot embedded + per-browser adds/edits in localStorage.
    "gas"   (Apps Script): every book comes from the live Google Sheet and edits write back.
    gen_gas.py flips MODE to "gas" and blanks EMBED. */
+window.addEventListener("error", function(ev){
+  try{
+    var b=document.getElementById("__errbar")||document.createElement("div");
+    b.id="__errbar";
+    b.style.cssText="position:fixed;top:0;left:0;right:0;z-index:99999;background:#7f1d1d;color:#fff;font:12px/1.6 ui-monospace,monospace;padding:8px 12px;white-space:pre-wrap";
+    b.textContent="⚠ JS ERROR: "+(ev.message||"?")+"  (line "+(ev.lineno||"?")+")";
+    (document.body||document.documentElement).appendChild(b);
+  }catch(_){}
+});
 const MODE  = "gas";
 const IS_GAS = MODE === "gas";
 const EMBED = [];
@@ -1014,19 +1023,21 @@ function initAddBook(){
   setMode(false); reset();
 }
 
-/* on-page diagnostic for the Apps Script build (so no browser console is needed) */
+/* on-page diagnostic for the Apps Script build — fixed bar at the very top, so it's
+   visible without scrolling and needs no browser console */
 function showGasDiag(extra){
-  var r=document.getElementById("results"); if(!r) return;
-  r.innerHTML='<div class="empty" style="text-align:left;max-width:640px;margin:0 auto">'
-    +'<div class="big">⚠️</div>'
-    +'<div style="font-family:monospace;font-size:12.5px;line-height:2;color:var(--muted)">'
-    +'IS_GAS: <b>'+IS_GAS+'</b><br>'
-    +'window.__BOOKS_B64__ present: <b>'+(GAS_DIAG.hasVar?'yes':'no')+'</b><br>'
-    +'base64 length: <b>'+(GAS_DIAG.rawLen||0)+'</b><br>'
-    +'decoded books: <b>'+(GAS_DIAG.decoded||0)+'</b><br>'
-    +'decode error: <b style="color:#f87171">'+esc(GAS_DIAG.decodeErr||'none')+'</b><br>'
-    +(extra||'')
-    +'</div></div>';
+  var msg="IS_GAS="+IS_GAS
+    +" | b64 present="+(GAS_DIAG.hasVar?"yes":"no")
+    +" | b64 length="+(GAS_DIAG.rawLen||0)
+    +" | decoded="+(GAS_DIAG.decoded||0)
+    +" | decodeErr="+(GAS_DIAG.decodeErr||"none")
+    +(extra?(" | "+extra.replace(/<[^>]*>/g,"")):"");
+  var b=document.getElementById("__diagbar");
+  if(!b){ b=document.createElement("div"); b.id="__diagbar";
+    b.style.cssText="position:fixed;top:0;left:0;right:0;z-index:99998;background:#1e3a8a;color:#fff;font:12px/1.6 ui-monospace,monospace;padding:8px 12px;white-space:pre-wrap"; }
+  b.textContent="ℹ DIAGNOSTIC — "+msg;
+  (document.body||document.documentElement).appendChild(b);
+  try{ console.log("GAS_DIAG:", msg); }catch(_){}
 }
 
 /* ---------- boot ---------- */
