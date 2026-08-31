@@ -191,3 +191,17 @@ function debugSheets() {
   Logger.log("sheet_() -> name='" + picked.getName() + "' gid=" + picked.getSheetId());
   Logger.log("getBookData() returned " + getBookData().length + " books");
 }
+
+/* Proves whether the page that doGet serves actually contains the injected data.
+   Select "debugOut" -> Run -> Execution log. */
+function debugOut() {
+  var t = HtmlService.createTemplateFromFile("Index");
+  t.dataB64 = Utilities.base64Encode(JSON.stringify(getBookData()), Utilities.Charset.UTF_8);
+  Logger.log("dataB64 length = " + t.dataB64.length + " (should be a few thousand)");
+  var html = t.evaluate().getContent();
+  Logger.log("served html length = " + html.length);
+  Logger.log("html has MODE=gas : " + (html.indexOf('MODE  = "gas"') >= 0));
+  var i = html.indexOf("__BOOKS_B64__ =");
+  Logger.log("html has injection: " + (i >= 0));
+  if (i >= 0) Logger.log("injected snippet: " + html.substring(i, i + 70));
+}
